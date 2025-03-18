@@ -1,0 +1,52 @@
+<div style="display: flex; align-items: center; gap: 10px; ">
+    <h3>{{ promotion.title }}</h3>
+    @if (promotion.activeDate !== null && promotion.availableAmountToPurchase === 0 && promotion.futureDates.length >
+    0) {
+    <p>Activa hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}</p>
+    <p>Próximamente el {{ promotion.futureDates[0].from | date:'fullDate' }}</p>
+    }
+    @else if (promotion.activeDate !== null) {
+    <p>Activa hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}</p>
+    }
+    @else if (promotion.futureDates.length > 0) {
+    <p>Próximamente el {{ promotion.futureDates[0].from | date:'fullDate' }}</p>
+    }
+</div>
+<p>Descuento: <strong>{{ promotion.discount }} %</strong> - Tope: {{ promotion.limit.amount | currency }} (
+    <span>Importe: {{ promotion.calculatedPurchaseAmount | currency }}, </span>
+    @if (promotion.totalAmountPurchased > 0) {
+    <strong>Disponible: {{ promotion.availableAmountToPurchase | currency }}</strong>
+    }
+    )
+</p>
+@if (promotion.payment_methods.length > 0) {
+<h4>Formas de pago</h4>
+<ul>
+    @for (paymentMethod of promotion.payment_methods; track paymentMethod) {
+    <li><span>{{ paymentMethod }} <button type="button"
+                (click)="addPurchase(promotion, paymentMethod)">+</button></span>
+    </li>
+    }
+</ul>
+}
+@if (promotion.totalAmountPurchased > 0) {
+<p>Total comprado: {{ promotion.totalAmountPurchased | currency }}</p>
+<p>Total reintegrado: {{ promotion.totalAmountRefunded | currency }}</p>
+}
+
+@if (promotion.activeDate !== null) {
+<ul>
+    @for (purchase of promotion.activeDate.purchases; track purchase.id) {
+    <li>{{ purchase.date }} - {{ purchase.storeName }} - {{ purchase.amount | currency }} / {{ purchase.paymentMethod }} <button type="button"
+            (click)="removePurchase(purchase)">X</button></li>
+    }
+</ul>
+}
+@else {
+<ul>
+    @for (purchase of promotion.purchasesMade; track purchase.id) {
+    <li>{{ purchase.storeName }} - {{ purchase.amount | currency }} / {{ purchase.paymentMethod }} <button type="button"
+            (click)="removePurchase(purchase)">X</button></li>
+    }
+</ul>
+}
