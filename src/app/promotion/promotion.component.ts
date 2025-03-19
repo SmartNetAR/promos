@@ -12,6 +12,7 @@ import { ShoppingService } from '../shopping.service';
 })
 export class PromotionComponent {
   @Input() promotion: any;
+  showPastPurchases = false;
 
   constructor(private readonly shoppingService: ShoppingService) { }
 
