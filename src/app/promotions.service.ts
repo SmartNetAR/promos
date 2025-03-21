@@ -30,7 +30,11 @@ export class PromotionsService {
       const fromDate = parseISO(promo.validity.from);
       const toDate = parseISO(promo.validity.to);
       const validDates = this.getValidDates(fromDate, toDate, promo.validity, promo.limit.period);
-      const purchases = self.shoppingService.getPurchasesByPromoId(promo.id);
+      const purchases = self.shoppingService.getPurchasesByPromoId(promo.id)
+        .map(purchase => ({
+          ...purchase,
+          date: startOfDay(parseISO(purchase.date))
+        }));
 
       const isoValidDates = validDates.map(date => ({
         from: startOfDay(parseISO(date.from)),

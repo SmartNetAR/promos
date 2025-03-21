@@ -17,7 +17,6 @@ export class PromotionComponent {
   constructor(private readonly shoppingService: ShoppingService) { }
 
   addPurchase(promotion: any, paymentMethod: string) {
-
     this.shoppingService.addPurchase(promotion, paymentMethod);
   }
 

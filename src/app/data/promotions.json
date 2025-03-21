@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "title": "Mayoristas",
+        "title": "Supermercados Mayoristas",
         "payment_methods": [
             "Modo / BNA+ / Crédito"
         ],
@@ -14,7 +14,7 @@
         },
         "validity": {
             "from": "2025-03-01",
-            "to": "2025-03-31",
+            "to": "2025-04-30",
             "days_of_week": [
                 3
             ]
@@ -84,7 +84,7 @@
         },
         "validity": {
             "from": "2025-03-01",
-            "to": "2025-03-31",
+            "to": "2025-04-30",
             "days_of_week": [
                 5,
                 6,

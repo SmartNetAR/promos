@@ -38,6 +38,7 @@ export class ShoppingService {
 
   removePurchase(purchaseId: number) {
     this.shopping = this.shopping.filter(purchase => purchase.id !== purchaseId);
+    this.updateStorage();
   }
 
   private updateStorage() {
