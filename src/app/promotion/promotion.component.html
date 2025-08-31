@@ -2,14 +2,17 @@
     <h3>{{ promotion.title }}</h3>
     @if (promotion.activeDate !== null && promotion.futureDates.length >
     0) {<!-- && promotion.availableAmountToPurchase === 0 -->
-    <p>Activa hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
-    <p>Próximamente el {{ promotion.futureDates[0].from | date:'fullDate' }}.</p>
+    <p><b style="color: cadetblue;">Activa</b> hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
+    <p>Próximamente el {{ promotion.futureDates[0].from | date:'EEEE dd MMMM' }}.</p>
     }
     @else if (promotion.activeDate !== null) {
-    <p>Activa hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
+    <p><b style="color: cadetblue;">Activa</b> hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
     }
     @else if (promotion.futureDates.length > 0) {
-    <p>Próximamente el {{ promotion.futureDates[0].from | date:'fullDate' }}.</p>
+    <p>Próximamente el {{ promotion.futureDates[0].from | date:'EEEE dd MMMM' }}.</p>
+    }
+    @else {
+    <p>Finalizada por última vez: {{ promotion.pastDates[promotion.pastDates.length - 1].to | date:'EEEE dd MMMM' }}</p>
     }
 </div>
 <p>Descuento: <strong>{{ promotion.discount }} %</strong> - Tope: {{ promotion.limit.amount | currency }} (
@@ -46,7 +49,7 @@
     (
     {{promotion.pastDates[promotion.pastDates.length -1].from | date: 'dd-MM'}}
     @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !==
-    (promotion.pastDates[promotion.pastDates.length -1].to | date: 'dd-MM')) {
+    (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
     -
     {{promotion.pastDates[promotion.pastDates.length -1].to | date: 'dd-MM'}}
     }

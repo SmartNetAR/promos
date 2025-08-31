@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { compareDesc, parse } from 'date-fns';
+import { compareDesc, parse, startOfDay } from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class ShoppingService {
   }
 
   addPurchase(promotion: any, paymentMethod: string) {
-    const today = new Date();
+    const today = startOfDay(new Date());
     const amount = prompt('Ingrese el monto de la compra');
     const date = prompt('Ingrese la fecha de la compra (dd-mm-aaaa)', today.toISOString().split('T')[0]);
     const storeName = prompt('Ingrese el nombre del comercio');

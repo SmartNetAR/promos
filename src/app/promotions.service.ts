@@ -8,11 +8,13 @@ import { ValidDate } from './valid-date';
   providedIn: 'root'
 })
 export class PromotionsService {
+  private readonly allDaysOfWeekAmount = 7;
   favouriteIds: number[] = [];
+  // private readonly today = startOfDay(parseISO("2025-08-27"));
   private readonly today = startOfDay(new Date());
 
   constructor(private readonly shoppingService: ShoppingService) {
-    this.favouriteIds.push(1, 4, 6);
+    // this.favouriteIds.push(1, 4, 6);
 
   }
 
@@ -24,8 +26,18 @@ export class PromotionsService {
     const comercios_de_barrio = 4;
     const dia = 5;
     const supermercados = 6;
+    const carrefour = 7;
+    const todas = true;
 
-    return data.filter(promo => promo.id > 0).map(promo => {
+    const filterPromos = ((promo: any) =>
+        // promo.id === supermercados ||
+        // promo.id === shell ||
+        // promo.id === mayoristas ||
+        todas
+    );
+
+    return data
+      .filter(filterPromos).map(promo => {
       const self = this;
       const fromDate = parseISO(promo.validity.from);
       const toDate = parseISO(promo.validity.to);
@@ -67,9 +79,19 @@ export class PromotionsService {
 
             const purchasesInThisInterval = self.getPurchasesByInterval(purchases, activeDate);
 
-            const totalAmountPurchasedInThisInterval = purchasesInThisInterval.reduce((acc, purchase) => acc + purchase.amount, 0) ?? 0;
+            let totalAmountPurchasedInThisInterval = purchasesInThisInterval.reduce((acc, purchase) => acc + purchase.amount, 0) ?? 0;
 
             let totalAmountRefunded = 0;
+
+            if (promo.limit.period === 'month') {
+              const start = startOfMonth(self.today);
+              const end = endOfMonth(self.today);
+
+              const purchasesInThisMonth = self.getPurchasesByInterval(purchases, { from: start, to: end });
+
+              totalAmountPurchasedInThisInterval = purchasesInThisMonth.reduce((acc, purchase) => acc + purchase.amount, 0) ?? 0;
+            }
+
             if (totalAmountPurchasedInThisInterval !== 0) {
 
               totalAmountRefunded = totalAmountPurchasedInThisInterval * promo.discount / 100;
@@ -77,7 +99,8 @@ export class PromotionsService {
               totalAmountRefunded = totalAmountRefunded > promo.limit.amount ? promo.limit.amount : totalAmountRefunded;
             }
 
-            const availableAmountToPurchase = self.getAvailableAmountToPurchase(promo, this.calculatedPurchaseAmount, totalAmountPurchasedInThisInterval)
+            const availableAmountToPurchase = self.getAvailableAmountToPurchase(promo, this.calculatedPurchaseAmount, totalAmountPurchasedInThisInterval, isoValidDates)
+
 
             return {
               ...activeDate,
@@ -128,7 +151,7 @@ export class PromotionsService {
 
 
     if (validity.days_of_week != null) {
-      if (validity.days_of_week.length === 7) {
+      if (validity.days_of_week.length === this.allDaysOfWeekAmount) {
 
         // When a promotion is valid for months, we need to calculate the valid dates for each month
         if (period === 'month') {
@@ -206,8 +229,19 @@ export class PromotionsService {
     }));
   }
 
-  private getAvailableAmountToPurchase(promo: any, calculatedPurchaseAmount: number, totalAmountPurchased: number): number {
+  private getAvailableAmountToPurchase(promo: any, calculatedPurchaseAmount: number, totalAmountPurchased: number, isoValidDates: any): number {
     if (promo.limit.mode === 'user') {
+      if (promo.limit.period === 'month' ) {
+        const start = startOfMonth(this.today);
+        const end = endOfMonth(this.today);
+
+        // const purchasesInThisMonth = this.getPurchasesByInterval(isoValidDates[0]., { from: start, to: end });
+
+        console.log('>>> [promo]', promo);
+        console.log('>>> [isoValidDates]', isoValidDates);
+        // console.log('>>> [purchasesInThisMonth]', purchasesInThisMonth);
+
+      }
       const availableAmountToPurchase = calculatedPurchaseAmount - totalAmountPurchased;
 
       return availableAmountToPurchase > 0 ? availableAmountToPurchase : 0;
