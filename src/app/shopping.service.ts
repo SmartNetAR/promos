@@ -20,13 +20,15 @@ export class ShoppingService {
   addPurchase(promotion: any, paymentMethod: string) {
     const today = startOfDay(new Date());
     const amount = prompt('Ingrese el monto de la compra');
-    const date = prompt('Ingrese la fecha de la compra (dd-mm-aaaa)', today.toISOString().split('T')[0]);
+    if (!amount || !parseFloat(amount)) return;
+    const date = prompt(`Ingrese la fecha de la compra (${today.toISOString().split('T')[0]})`, today.toISOString().split('T')[0]);
     const storeName = prompt('Ingrese el nombre del comercio');
+    if (!storeName) return;
 
     const shopping = {
       id: this.shopping.length + 1,
       promoId: promotion.id,
-      amount: amount ? parseFloat(amount) : 0,
+      amount: parseFloat(amount),
       date: date,
       storeName: storeName,
       paymentMethod
