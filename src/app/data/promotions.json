@@ -159,5 +159,26 @@
                 5
             ]
         }
+    },
+    {
+        "id": 8,
+        "title": "Vital con Ciudad y Buepp",
+        "payment_methods": [
+            "Modo / Ciudad / Crédito y Débito"
+        ],
+        "discount": 20,
+        "limit": {
+            "amount": 20000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-07-01",
+            "to": "2025-12-31",
+            "days_of_week": [
+                1
+            ]
+        }
     }
 ]

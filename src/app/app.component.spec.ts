@@ -20,10 +20,11 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('promos');
   });
 
-  it('should render title', () => {
+  it('should render headers when there are promotions', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, promos');
+    // Expect at least one of the section headers to be in the DOM structure
+    expect(compiled.textContent).toContain('Otras Promociones');
   });
 });

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { compareDesc, parse, startOfDay } from 'date-fns';
+import { StorageService } from './storage.service';
+import { InteractionService } from './interaction.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,8 +9,8 @@ import { compareDesc, parse, startOfDay } from 'date-fns';
 export class ShoppingService {
   shopping: any[] = [];
 
-  constructor() {
-    this.getStorage();
+  constructor(private readonly storage: StorageService, private readonly ui: InteractionService) {
+    this.shopping = this.storage.load();
   }
 
   getPurchasesByPromoId(promoId: number) {
@@ -19,10 +21,10 @@ export class ShoppingService {
 
   addPurchase(promotion: any, paymentMethod: string) {
     const today = startOfDay(new Date());
-    const amount = prompt('Ingrese el monto de la compra');
+    const amount = this.ui.prompt('Ingrese el monto de la compra');
     if (!amount || !parseFloat(amount)) return;
-    const date = prompt(`Ingrese la fecha de la compra (${today.toISOString().split('T')[0]})`, today.toISOString().split('T')[0]);
-    const storeName = prompt('Ingrese el nombre del comercio');
+    const date = this.ui.prompt(`Ingrese la fecha de la compra (${today.toISOString().split('T')[0]})`, today.toISOString().split('T')[0]);
+    const storeName = this.ui.prompt('Ingrese el nombre del comercio');
     if (!storeName) return;
 
     const shopping = {
@@ -44,14 +46,6 @@ export class ShoppingService {
   }
 
   private updateStorage() {
-    localStorage.setItem('shopping', JSON.stringify(this.shopping));
-  }
-
-  private getStorage() {
-    const shopping = localStorage.getItem('shopping');
-
-    if (shopping) {
-      this.shopping = JSON.parse(shopping);
-    }
+    this.storage.save(this.shopping);
   }
 }
