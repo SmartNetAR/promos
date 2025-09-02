@@ -2,6 +2,18 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.1.
 
+## CI / Deploy
+
+This project deploys to GitHub Pages via GitHub Actions on every push to `master`.
+
+- Workflow: `.github/workflows/deploy-pages.yml`
+- Output: `dist/promos` is published to Pages automatically.
+- Public URL: https://smartnetar.github.io/promos/
+
+Notes:
+- The `docs/` folder is ignored and not committed. Builds are produced in CI only.
+- Data JSONs from `src/app/data` are included in the build as assets under `/data`.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
@@ -13,6 +25,10 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+For local preview of the Pages build, you can run:
+
+- `npm run build` and serve `dist/promos` with any static server.
 
 ## Running unit tests
 
