@@ -1,71 +1,126 @@
-<div style="display: flex; align-items: center; gap: 10px; ">
-    <h3>{{ promotion.title }}</h3>
-    @if (promotion.activeDate !== null && promotion.futureDates.length >
-    0) {<!-- && promotion.availableAmountToPurchase === 0 -->
-    <p><b style="color: cadetblue;">Activa</b> hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
-    <p>Próximamente el {{ promotion.futureDates[0].from | date:'EEEE dd MMMM' }}.</p>
-    }
-    @else if (promotion.activeDate !== null) {
-    <p><b style="color: cadetblue;">Activa</b> hasta el {{ promotion.activeDate.to | date:'EEEE dd MMMM' }}.</p>
-    }
-    @else if (promotion.futureDates.length > 0) {
-    <p>Próximamente el {{ promotion.futureDates[0].from | date:'EEEE dd MMMM' }}.</p>
-    }
-    @else {
-    <p>Finalizada por última vez: {{ promotion.pastDates[promotion.pastDates.length - 1].to | date:'EEEE dd MMMM' }}</p>
-    }
-</div>
-<p>Descuento: <strong>{{ promotion.discount }} %</strong> - Tope: {{ promotion.limit.amount | currency }} (
-    <span>Importe: {{ promotion.calculatedPurchaseAmount | currency }} </span>)
-</p>
-@if (promotion.payment_methods.length > 0) {
-<h4>Formas de pago</h4>
-<ul>
-    @for (paymentMethod of promotion.payment_methods; track paymentMethod) {
-    <li><span>{{ paymentMethod }} <button type="button"
-                (click)="addPurchase(promotion, paymentMethod)">+</button></span>
-    </li>
-    }
-</ul>
-}
+<section class="promo-card">
+    <header class="promo-header">
+            <h3 class="promo-title">{{ promotion.title }}</h3>
+            <button class="icon-btn star" type="button" (click)="toggleFavourite()" [class.active]="isFavourite" [attr.aria-label]="isFavourite ? 'Quitar de favoritos' : 'Marcar como favorito'" title="Favorito">
+                <span class="material-symbols-rounded icon" [style.fontVariationSettings]="isFavourite ? '\'FILL\' 1' : '\'FILL\' 0'">grade</span>
+            </button>
+        <div class="promo-status">
+            @if (promotion.activeDate !== null) {
+                <span class="badge badge-success" title="Activa">
+                    <span class="material-symbols-rounded icon">check_circle</span>
+                    Activa hasta {{ promotion.activeDate.to | date:'EEE dd MMM' }}
+                </span>
+            }
+            @else if (promotion.futureDates.length > 0) {
+                <span class="badge badge-info" title="Próximamente">
+                    <span class="material-symbols-rounded icon">schedule</span>
+                    Desde {{ promotion.futureDates[0].from | date:'EEE dd MMM' }}
+                </span>
+            }
+            @else {
+                <span class="badge badge-muted" title="Finalizada">
+                    <span class="material-symbols-rounded icon">event</span>
+                    Última vez: {{ promotion.pastDates[promotion.pastDates.length - 1].to | date:'EEE dd MMM' }}
+                </span>
+            }
+        </div>
+    </header>
 
-@if (promotion.activeDate !== null && promotion.activeDate.totalAmountPurchased > 0) {
-<p>Total comprado: {{ promotion.activeDate.totalAmountPurchased | currency }}</p>
-<p>Total reintegrado: {{ promotion.activeDate.totalAmountRefunded | currency }}</p>
-<p><strong>Disponible: {{ promotion.activeDate.availableAmountToPurchase | currency }}</strong></p>
-<ul>
-    @for (purchase of promotion.activeDate.purchases; track purchase.id) {
-    <li>{{ purchase.date | date: 'dd-MM'}} - {{ purchase.storeName }} - {{ purchase.amount | currency }} / {{ purchase.paymentMethod }}
-        <button type="button" (click)="removePurchase(purchase)">X</button>
-    </li>
+    <div class="promo-meta">
+        <div class="meta-item"><span class="meta-label">Descuento</span><span class="meta-value">{{ promotion.discount }}%</span></div>
+    <div class="meta-item"><span class="meta-label">Tope</span><span class="meta-value">{{ promotion.limit.amount | currency:undefined:'symbol':'1.0-0' }}</span></div>
+    <div class="meta-item"><span class="meta-label">Importe</span><span class="meta-value">{{ promotion.calculatedPurchaseAmount | currency:undefined:'symbol':'1.0-0' }}</span></div>
+    </div>
+
+    @if (promotion.payment_methods.length > 0) {
+        <div class="payments">
+            <h4>Formas de pago</h4>
+            <ul class="chip-list">
+                @for (paymentMethod of promotion.payment_methods; track paymentMethod) {
+                    <li class="chip">
+                        <span class="chip-label">{{ paymentMethod }}</span>
+                        <button class="icon-btn primary" type="button" (click)="addPurchase(promotion, paymentMethod)" [attr.aria-label]="'Agregar compra con ' + paymentMethod" title="Agregar compra">
+                            <span class="material-symbols-rounded icon">add_circle</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
     }
-</ul>
-}
-<button type="button" (click)="showPastPurchases=!showPastPurchases">{{showPastPurchases ? 'Ocultar' : 'Mostrar'}}
-    Anteriores</button>
-@if (showPastPurchases && promotion.pastDates.length > 0 && promotion.pastDates[promotion.pastDates.length
--1].purchases) {
-<p>Mis pagos periodo anterior
-    (
-    {{promotion.pastDates[promotion.pastDates.length -1].from | date: 'dd-MM'}}
-    @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !==
-    (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
-    -
-    {{promotion.pastDates[promotion.pastDates.length -1].to | date: 'dd-MM'}}
+
+    @if (promotion.activeDate !== null && promotion.activeDate.totalAmountPurchased > 0) {
+        <div class="totals">
+            <div><span class="meta-label">Comprado</span><span class="meta-value">{{ promotion.activeDate.totalAmountPurchased | currency:undefined:'symbol':'1.0-0' }}</span></div>
+            <div><span class="meta-label">Reintegrado</span><span class="meta-value">{{ promotion.activeDate.totalAmountRefunded | currency:undefined:'symbol':'1.0-0' }}</span></div>
+            <div><span class="meta-label">Disponible</span><span class="meta-value strong">{{ promotion.activeDate.availableAmountToPurchase | currency:undefined:'symbol':'1.0-0' }}</span></div>
+        </div>
+            @if (availableProgress() !== null) {
+                <div class="progress">
+                    <div class="bar" [style.width.%]="availableProgress()"></div>
+                </div>
+            }
+        <ul class="purchase-list">
+            @for (purchase of promotion.activeDate.purchases; track purchase.id) {
+                                <li class="purchase-item">
+                    <div class="purchase-info">
+                        <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
+                        <span class="store">{{ purchase.storeName }}</span>
+                        <span class="amount">{{ purchase.amount | currency }}</span>
+                        <span class="method">/ {{ purchase.paymentMethod }}</span>
+                    </div>
+                                        <div class="actions">
+                                            <button class="icon-btn" type="button" (click)="editPurchase(purchase)" [attr.aria-label]="'Editar compra'" title="Editar compra">
+                                                <span class="material-symbols-rounded icon">edit</span>
+                                            </button>
+                                            <button class="icon-btn danger" type="button" (click)="removePurchase(purchase)" [attr.aria-label]="'Eliminar compra'" title="Eliminar compra">
+                                                <span class="material-symbols-rounded icon">delete</span>
+                                            </button>
+                                        </div>
+                </li>
+            }
+        </ul>
     }
-    ):
-</p>
-<ul>
-    @for (purchase of promotion.pastDates[promotion.pastDates.length -1].purchases; track purchase.id) {
-    <li>
-        @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !==
-        (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
-        {{ purchase.date | date: 'dd-MM' }} -
-        }
-        {{ purchase.storeName }} - {{ purchase.amount | currency }} / {{
-        purchase.paymentMethod }}
-        <button type="button" (click)="removePurchase(purchase)">X</button>
-    </li>
+
+    @if (promotion.pastDates.length > 0 && (promotion.pastDates[promotion.pastDates.length -1].purchases?.length ?? 0) > 0) {
+        <div class="past-toggle">
+            <button class="text-btn" type="button" (click)="showPastPurchases=!showPastPurchases">
+                <span class="material-symbols-rounded icon chevron" [class.rotate]="showPastPurchases">expand_more</span>
+                {{showPastPurchases ? 'Ocultar' : 'Mostrar'}} anteriores
+            </button>
+        </div>
     }
-</ul>
-}
+
+    @if (showPastPurchases && promotion.pastDates.length > 0 && (promotion.pastDates[promotion.pastDates.length -1].purchases?.length ?? 0) > 0) {
+        <div class="past">
+            <p class="past-title">Mis pagos periodo anterior
+                ({{promotion.pastDates[promotion.pastDates.length -1].from | date: 'dd-MM'}}
+                @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !== (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
+                    - {{promotion.pastDates[promotion.pastDates.length -1].to | date: 'dd-MM'}}
+                }
+                ):
+            </p>
+            <ul class="purchase-list">
+                @for (purchase of promotion.pastDates[promotion.pastDates.length -1].purchases; track purchase.id) {
+                    <li class="purchase-item">
+                        <div class="purchase-info">
+                            @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !== (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
+                                <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
+                            }
+                            <span class="store">{{ purchase.storeName }}</span>
+                            <span class="amount">{{ purchase.amount | currency }}</span>
+                            <span class="method">/ {{ purchase.paymentMethod }}</span>
+                        </div>
+                                                <div class="actions">
+                                                    <button class="icon-btn" type="button" (click)="editPurchase(purchase)" [attr.aria-label]="'Editar compra'" title="Editar compra">
+                                                        <span class="material-symbols-rounded icon">edit</span>
+                                                    </button>
+                                                    <button class="icon-btn danger" type="button" (click)="removePurchase(purchase)" [attr.aria-label]="'Eliminar compra'" title="Eliminar compra">
+                                                        <span class="material-symbols-rounded icon">delete</span>
+                                                    </button>
+                                                </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</section>

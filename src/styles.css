@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global base styles */
+:root {
+	--font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+	--bg: #f9fafb;
+	--fg: #111827;
+}
+
+html, body { height: 100%; }
+body {
+	margin: 0;
+	font-family: var(--font-sans);
+	background: var(--bg);
+	color: var(--fg);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	line-height: 1.4;
+}
+
+h1, h2, h3, h4 { line-height: 1.2; }
+ul { padding-left: 1rem; }

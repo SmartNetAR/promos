@@ -1,0 +1,26 @@
+.main { padding: 12px; }
+.content { max-width: 900px; margin: 0 auto; }
+.left-side { display: grid; gap: 12px; }
+
+.section-separator {
+	position: relative;
+	height: 1px;
+	background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+	margin: 12px 0;
+}
+.section-separator .sep-label {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #fff;
+	padding: 2px 8px;
+	color: #6b7280;
+	font-size: .85rem;
+	border-radius: 999px;
+	box-shadow: 0 0 0 4px #fff; /* creates a gap in the line */
+}
+
+@media (max-width: 600px) {
+	.main { padding: 8px; }
+}

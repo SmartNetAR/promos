@@ -40,9 +40,31 @@ export class ShoppingService {
     this.updateStorage();
   }
 
+  addPurchaseDirect(promotion: any, paymentMethod: string, amount: number, isoDate: string, storeName: string) {
+    if (!amount || !isoDate || !storeName) return;
+    const shopping = {
+      id: this.shopping.length + 1,
+      promoId: promotion.id,
+      amount: parseFloat(String(amount)),
+      date: isoDate,
+      storeName: storeName,
+      paymentMethod
+    };
+    this.shopping.push(shopping);
+    this.updateStorage();
+  }
+
   removePurchase(purchaseId: number) {
     this.shopping = this.shopping.filter(purchase => purchase.id !== purchaseId);
     this.updateStorage();
+  }
+
+  editPurchase(update: { id: number; amount: number; date: string; storeName: string; }) {
+    const idx = this.shopping.findIndex(p => p.id === update.id);
+    if (idx >= 0) {
+      this.shopping[idx] = { ...this.shopping[idx], amount: parseFloat(String(update.amount)), date: update.date, storeName: update.storeName };
+      this.updateStorage();
+    }
   }
 
   private updateStorage() {

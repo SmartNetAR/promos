@@ -6,6 +6,7 @@ import { ValidDate } from './valid-date';
 import { DateIntervalService } from './date-interval.service';
 import { PromotionModel } from './promotion.model';
 import { ClockService } from './clock.service';
+import { FavouritesService } from './favourites.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,12 @@ export class PromotionsService {
   // private readonly today = startOfDay(parseISO("2025-08-27"));
   private get today() { return this.clock.today(); }
 
-  constructor(private readonly shoppingService: ShoppingService, private readonly dateSvc: DateIntervalService, private readonly clock: ClockService) {
+  constructor(
+    private readonly shoppingService: ShoppingService,
+    private readonly dateSvc: DateIntervalService,
+    private readonly clock: ClockService,
+  private readonly favs: FavouritesService
+  ) {
     // this.favouriteIds.push(1, 4, 6);
 
   }
@@ -38,18 +44,18 @@ export class PromotionsService {
       todas
     );
 
-    return data
+  return data
       .filter(filterPromos)
       .map(promo => {
         const purchases = this.shoppingService.getPurchasesByPromoId(promo.id);
-        const model = new PromotionModel({ ...promo, isFavourite: this.favouriteIds.includes(promo.id) }, this.dateSvc, this.today, purchases);
+    const model = new PromotionModel({ ...promo, isFavourite: this.favs.has(promo.id) }, this.dateSvc, this.today, purchases);
         // Keep shape compatible with components by returning the model instance (it exposes same getters/props)
         return model as any;
       });
   }
 
   getFavouritePromotions() {
-    return this.getPromotions().filter(promo => promo.isFavourite);
+    return this.getPromotions().filter(promo => this.favs.has(promo.id) || promo.isFavourite);
   }
 
   // Keeping service slim; date and interval logic extracted to DateIntervalService and PromotionModel

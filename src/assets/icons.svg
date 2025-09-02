@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="check-circle" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2m-1 14l-4-4l1.41-1.41L11 12.17l5.59-5.58L18 8l-7 8Z"/>
+  </symbol>
+  <symbol id="clock" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 20a8 8 0 1 0-8-8a8 8 0 0 0 8 8m0-18a10 10 0 1 1-10 10A10 10 0 0 1 12 2m1 5v6l5 3l-1 1l-6-3.5V7z"/>
+  </symbol>
+  <symbol id="calendar" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H5V9h14z"/>
+  </symbol>
+  <symbol id="plus" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6z"/>
+  </symbol>
+  <symbol id="delete" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M9 3h6v2h5v2H4V5h5zm1 6h2v9h-2zm4 0h2v9h-2zM7 9h2v9H7z"/>
+  </symbol>
+  <symbol id="star" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+  <symbol id="star-outline" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24z"/>
+  </symbol>
+  <symbol id="chevron-down" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z"/>
+  </symbol>
+</svg>

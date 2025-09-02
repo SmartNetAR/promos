@@ -2,15 +2,18 @@
   <div class="content">
     <div class="left-side">
       @if (favouritePromotions.length > 0) {
-      <h1>Promociones Favoritas</h1>
-      @for (promotion of favouritePromotions; track promotion.id) {
-      <app-promotion [promotion]="promotion"></app-promotion>
+  @for (promotion of favouritePromotions; track promotion.id) {
+  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)"></app-promotion>
       }
+      }
+      @if (favouritePromotions.length > 0 && otherPromotions.length > 0) {
+        <div class="section-separator" role="separator">
+          <span class="sep-label">Más promociones</span>
+        </div>
       }
       @if (otherPromotions.length > 0) {
-      <h1>Otras Promociones</h1>
-      @for (promotion of otherPromotions; track promotion.id) {
-      <app-promotion [promotion]="promotion"></app-promotion>
+  @for (promotion of otherPromotions; track promotion.id) {
+  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)"></app-promotion>
       }
       }
     </div>
@@ -18,3 +21,5 @@
 </main>
 
 <router-outlet></router-outlet>
+<app-toast-container></app-toast-container>
+<app-purchase-flyout (submitted)="handlePurchaseSubmit($event)" (updated)="handlePurchaseUpdate($event)"></app-purchase-flyout>
