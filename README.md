@@ -1,5 +1,8 @@
 # Promos
 
+[![Deploy to GitHub Pages](https://github.com/SmartNetAR/promos/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/SmartNetAR/promos/actions/workflows/deploy-pages.yml)
+[![CI Tests](https://github.com/SmartNetAR/promos/actions/workflows/ci.yml/badge.svg)](https://github.com/SmartNetAR/promos/actions/workflows/ci.yml)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.1.
 
 ## CI / Deploy
@@ -13,6 +16,9 @@ This project deploys to GitHub Pages via GitHub Actions on every push to `master
 Notes:
 - The `docs/` folder is ignored and not committed. Builds are produced in CI only.
 - Data JSONs from `src/app/data` are included in the build as assets under `/data`.
+
+Manual deploy:
+- You can trigger a deploy manually from the Actions tab → “Deploy to GitHub Pages” → Run workflow.
 
 ## Development server
 
