@@ -36,6 +36,19 @@ For local preview of the Pages build, you can run:
 
 - `npm run build` and serve `dist/promos` with any static server.
 
+## Local preview
+
+Quick preview (local base href):
+- Build: `npm run build`
+- Serve: `npx http-server dist/promos -p 4201 -c-1`
+- Open: http://localhost:4201/
+
+Preview mirroring GitHub Pages path (/promos/):
+- Build with pages base: `ng build --base-href /promos/`
+- Stage under a parent folder: `mkdir -p preview && cp -r dist/promos preview/promos`
+- Serve the parent: `npx http-server preview -p 4201 -c-1`
+- Open: http://localhost:4201/promos/
+
 ## Running unit tests
 
 This repo uses Jest with `jest-preset-angular` (no Chrome required).
