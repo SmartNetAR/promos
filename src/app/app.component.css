@@ -20,7 +20,52 @@
 	border-radius: 999px;
 	box-shadow: 0 0 0 4px #fff; /* creates a gap in the line */
 }
+.section-separator .sep-badge { display: inline-block; margin-left: 6px; background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 1px 6px; font-size: .75rem; }
 
 @media (max-width: 600px) {
 	.main { padding: 8px; }
+}
+
+/* Top preferences bar */
+.topbar {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	backdrop-filter: blur(6px);
+	background: rgba(255,255,255,.7);
+	border-bottom: 1px solid #e5e7eb;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+}
+.topbar .right { display: inline-flex; gap: 8px; }
+.tb-btn {
+	display: inline-flex; align-items: center; gap: 6px;
+	border: 1px solid #e5e7eb; border-radius: 999px;
+	padding: 6px 10px; background: #fff; color: #111827; cursor: pointer;
+	box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.tb-btn:hover { filter: brightness(.98); }
+.tb-label { font-size: .9rem; }
+.tb-badge { background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 2px 6px; font-size: .8rem; margin-left: 4px; }
+.tb-dropdown { position: relative; }
+.tb-dropdown .caret { transition: transform .15s ease; }
+.tb-dropdown.open .caret { transform: rotate(180deg); }
+.tb-menu { position: absolute; right: 0; top: calc(100% + 6px); background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); list-style: none; padding: 6px; margin: 0; min-width: 200px; opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .12s ease, transform .12s ease; }
+.tb-dropdown.open .tb-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.tb-menu li { margin: 0; }
+.tb-menu button { width: 100%; text-align: left; background: transparent; border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.tb-menu button:hover { background: #f3f4f6; }
+.tb-menu button { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 6px; }
+.tb-menu .check { font-size: 18px; opacity: 0; }
+.tb-menu button.active .check { opacity: 1; color: #2563eb; }
+.tb-menu button.active { background: #eff6ff; }
+.tb-menu .menu-badge { background: #f3f4f6; color: #374151; border-radius: 999px; padding: 2px 6px; font-size: .75rem; }
+
+/* Accessibility: large text scale */
+:root.text-lg { font-size: 18px; }
+@media (max-width: 600px) {
+	:root.text-lg { font-size: 17px; }
 }

@@ -1,4 +1,44 @@
 <main class="main">
+  <div class="topbar" role="toolbar" aria-label="Preferencias">
+    <div class="left"></div>
+    <div class="right">
+      <div class="tb-dropdown" [class.open]="showFilterMenu">
+        <button type="button" class="tb-btn" (click)="toggleFilterMenu($event)" [attr.aria-expanded]="showFilterMenu" aria-haspopup="menu" [attr.aria-label]="'Filtro: ' + prefs.state$.value.filter" [title]="'Filtro: ' + prefs.state$.value.filter">
+          <span class="material-symbols-rounded">filter_alt</span>
+          <span class="tb-label">{{ prefs.state$.value.filter === 'active' ? 'Solo activas hoy' : (prefs.state$.value.filter === 'active-future' ? 'Activas y futuras' : 'Todas') }}</span>
+          <span class="tb-badge">{{ prefs.state$.value.filter === 'active' ? countActive : (prefs.state$.value.filter === 'active-future' ? countActiveFuture : countAll) }}</span>
+          <span class="material-symbols-rounded caret">expand_more</span>
+        </button>
+        <ul class="tb-menu" role="menu" #filterMenu (keydown)="onFilterMenuKeydown($event)">
+          <li role="none">
+            <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='active'" [class.active]="prefs.state$.value.filter==='active'" (click)="prefs.setFilter('active'); showFilterMenu=false">
+              <span class="material-symbols-rounded check">check</span>
+              <span>Solo activas hoy</span>
+              <span class="menu-badge">{{ countActive }}</span>
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='active-future'" [class.active]="prefs.state$.value.filter==='active-future'" (click)="prefs.setFilter('active-future'); showFilterMenu=false">
+              <span class="material-symbols-rounded check">check</span>
+              <span>Activas y futuras</span>
+              <span class="menu-badge">{{ countActiveFuture }}</span>
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='all'" [class.active]="prefs.state$.value.filter==='all'" (click)="prefs.setFilter('all'); showFilterMenu=false">
+              <span class="material-symbols-rounded check">check</span>
+              <span>Todas</span>
+              <span class="menu-badge">{{ countAll }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <button type="button" class="tb-btn" (click)="prefs.toggleTextScale()" [attr.aria-label]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'" [title]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'">
+        <span class="material-symbols-rounded">{{ prefs.state$.value.text === 'large' ? 'text_fields' : 'format_size' }}</span>
+        <span class="tb-label">{{ prefs.state$.value.text === 'large' ? 'Normal' : 'Grande' }}</span>
+      </button>
+    </div>
+  </div>
   <div class="content">
     <div class="left-side">
       @if (favouritePromotions.length > 0) {
@@ -8,7 +48,7 @@
       }
       @if (favouritePromotions.length > 0 && otherPromotions.length > 0) {
         <div class="section-separator" role="separator">
-          <span class="sep-label">Más promociones</span>
+          <span class="sep-label">Más promociones <span class="sep-badge">{{ otherPromotions.length }}</span></span>
         </div>
       }
       @if (otherPromotions.length > 0) {
