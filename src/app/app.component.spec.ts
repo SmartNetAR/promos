@@ -24,7 +24,10 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    // Expect at least one of the section headers to be in the DOM structure
-    expect(compiled.textContent).toContain('Otras Promociones');
+  // Expect the new topbar with filter label to be present
+  const topbar = compiled.querySelector('.topbar');
+  expect(topbar).toBeTruthy();
+  // Default filter is 'active-future' -> label should show 'Activas y futuras'
+  expect(topbar?.textContent).toContain('Activas y futuras');
   });
 });
