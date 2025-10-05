@@ -185,7 +185,7 @@
     },
     {
         "id": "c9d0e1f2-a3b4-4567-e89a-b1c2d3e4f506",
-        "title": "Mastercard especial Noviembre",
+        "title": "Mastercard especial Septiembre",
         "payment_methods": [],
         "discount": 20,
         "limit": {
@@ -196,8 +196,8 @@
             "totalCap": 5000
         },
         "validity": {
-            "from": "2025-11-01",
-            "to": "2025-11-30",
+            "from": "2025-09-01",
+            "to": "2025-09-30",
             "days_of_week": [
                 0,
                 1,
@@ -219,7 +219,7 @@
     },
     {
         "id": "d0e1f2a3-b4c5-4678-f90b-c2d3e4f50617",
-        "title": "Modo Especial Noviembre",
+        "title": "Modo Especial Septiembre",
         "payment_methods": [],
         "discount": 10,
         "minAmount": 40000,
@@ -230,8 +230,8 @@
             "period": "month"
         },
         "validity": {
-            "from": "2025-11-01",
-            "to": "2025-11-30",
+            "from": "2025-09-01",
+            "to": "2025-09-30",
             "days_of_week": [
                 0,
                 1,
@@ -423,6 +423,113 @@
                 5,
                 6
             ]
+        }
+    },
+    {
+        "id": "d3ec78c2-6db0-48ae-a8c9-0c22e13b9643",
+        "title": "McDonald's con QR NaranjaX",
+        "payment_methods": [
+            "QR / NaranjaX / Dinero en cuenta"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 5000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-10-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                5
+            ]
+        }
+    },
+    {
+        "id": "3187d9ed-445c-4814-abba-41eb636fb7f3",
+        "title": "Modo Jumbo, Disco y Vea",
+        "payment_methods": [
+            "NFC / Modo / BNA+ / tarjetas Mastercard",
+            "NFC / Modo / Galicia / tarjetas Mastercard",
+            "NFC / Modo / Supervielle / tarjetas Mastercard",
+            "NFC / Modo / Macro / tarjetas Mastercard",
+            "NFC / Modo / Buep / tarjetas Mastercard",
+            "NFC / Modo / Santander / tarjetas Mastercard"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 8000,
+            "times": "each",
+            "mode": "payment_methods",
+            "period": "week"
+        },
+        "validity": {
+            "from": "2025-05-15",
+            "to": "2025-10-31",
+            "days_of_week": [
+                2
+            ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
+        }
+    },
+    {
+        "id": "b6c5af4b-2b15-452e-b128-aca7cf7bc5a1",
+        "title": "Dia Personal Pay",
+        "payment_methods": [
+            "NFC / Personal Pay"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 6000,
+            "times": "each",
+            "mode": "payment_methods",
+            "period": "week"
+        },
+        "validity": {
+            "from": "2025-05-15",
+            "to": "2025-10-31",
+            "days_of_week": [
+                4
+            ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
+        }
+    },
+    {
+        "id": "e4f29c1c-71ee-49a2-89b7-5bd88adb0b23",
+        "title": "Fredo 1/4 o 1 KG. Personal Pay",
+        "payment_methods": [
+            "QR / Personal Pay"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 0,
+            "times": "each",
+            "mode": "payment_methods",
+            "period": "week"
+        },
+        "validity": {
+            "from": "2023-07-01",
+            "to": "2027-06-30",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
         }
     }
 ]
