@@ -4,13 +4,13 @@ import { ShoppingService } from './shopping.service';
 import { ClockService } from './clock.service';
 
 class FakeShoppingService {
-  private purchasesByPromo: Record<number, any[]> = {};
+  private purchasesByPromo: Record<string, any[]> = {};
 
-  setPurchases(promoId: number, purchases: any[]) {
+  setPurchases(promoId: string, purchases: any[]) {
     this.purchasesByPromo[promoId] = purchases;
   }
 
-  getPurchasesByPromoId(promoId: number) {
+  getPurchasesByPromoId(promoId: string) {
     return this.purchasesByPromo[promoId] ?? [];
   }
 }
@@ -49,9 +49,11 @@ describe('PromotionsService', () => {
     beforeEach(() => {
       fakeClock.set('2025-09-15T00:00:00Z');
       // Provide some purchases for promo id 2 (Shell, monthly, all days)
-      fakeShopping.setPurchases(2, [
-        { id: 1, promoId: 2, amount: 1000, date: '2025-09-03', storeName: 'S1', paymentMethod: 'Debit' },
-        { id: 2, promoId: 2, amount: 5000, date: '2025-09-10', storeName: 'S2', paymentMethod: 'Credit' }
+      const shellId = 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123';
+      const dniId = 'c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f';
+      fakeShopping.setPurchases(shellId, [
+        { id: 1, promoId: shellId, amount: 1000, date: '2025-09-03', storeName: 'S1', paymentMethod: 'Debit' },
+        { id: 2, promoId: shellId, amount: 5000, date: '2025-09-10', storeName: 'S2', paymentMethod: 'Credit' }
       ]);
     });
 
@@ -59,8 +61,8 @@ describe('PromotionsService', () => {
       const promos = service.getPromotions();
 
       // There should be at least the known ids from the JSON
-      const shell = promos.find((p: any) => p.id === 2);
-      const dni = promos.find((p: any) => p.id === 3);
+  const shell = promos.find((p: any) => p.id === 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123');
+  const dni = promos.find((p: any) => p.id === 'c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f');
 
       expect(shell).toBeTruthy();
       expect(dni).toBeTruthy();

@@ -13,7 +13,7 @@ export interface ValidityDTO {
 }
 
 export interface PromotionDTO {
-    id: number;
+    id: string; // GUID
     title: string;
     payment_methods: string[];
     discount: number; // percentage
@@ -23,7 +23,7 @@ export interface PromotionDTO {
 
 export interface PurchaseDTO {
     id: number;
-    promoId: number;
+    promoId: string; // GUID
     amount: number;
     date: string; // ISO yyyy-MM-dd
     storeName: string;

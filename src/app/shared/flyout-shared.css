@@ -1,0 +1,15 @@
+/* Shared flyout layout + buttons */
+.flyout { position: fixed; top:0; right:0; width:min(560px,95vw); height:100%; background:#fff; box-shadow:-8px 0 24px rgba(0,0,0,.2); transform:translateX(100%); transition:transform .25s ease; z-index:70; display:flex; flex-direction:column; }
+.flyout.open { transform:translateX(0); }
+.flyout-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #e5e7eb; }
+.icon { background:transparent; border:none; font-size:20px; cursor:pointer; }
+.form { display:grid; gap:12px; padding:12px 16px; overflow:auto; }
+label { display:grid; gap:6px; font-size:.9rem; }
+input, select { border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font:inherit; }
+.actions { display:flex; gap:8px; justify-content:flex-end; margin-top:4px; }
+.btn { border-radius:8px; padding:8px 12px; border:1px solid transparent; cursor:pointer; font:inherit; }
+.btn.primary { background:#2563eb; color:#fff; }
+.btn.primary:hover { background:#1d4ed8; }
+.btn.ghost { background:#f3f4f6; color:#111827; }
+.btn.ghost:hover { background:#e5e7eb; }
+.backdrop { position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(2px); z-index:60; }

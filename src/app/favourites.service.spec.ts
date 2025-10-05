@@ -25,28 +25,28 @@ describe('FavouritesService', () => {
 
   it('starts empty and toggles favourites', () => {
     expect(service.list()).toEqual([]);
-    const afterAdd = service.toggle(1);
+  const afterAdd = service.toggle('fav-1');
     expect(afterAdd).toBe(true);
-    expect(service.list()).toEqual([1]);
-    expect(service.has(1)).toBe(true);
+  expect(service.list()).toEqual(['fav-1']);
+  expect(service.has('fav-1')).toBe(true);
 
-    const afterRemove = service.toggle(1);
+  const afterRemove = service.toggle('fav-1');
     expect(afterRemove).toBe(false);
     expect(service.list()).toEqual([]);
-    expect(service.has(1)).toBe(false);
+  expect(service.has('fav-1')).toBe(false);
   });
 
   it('emits changes via favourites$', (done) => {
-    const events: number[][] = [];
-    const sub = service.favourites$.subscribe(v => events.push(v));
-    service.toggle(2);
-    service.toggle(3);
-    service.toggle(2); // remove 2
+  const events: string[][] = [];
+  const sub = service.favourites$.subscribe(v => events.push(v));
+  service.toggle('fav-2');
+  service.toggle('fav-3');
+  service.toggle('fav-2'); // remove 2
     setTimeout(() => {
       expect(events[0]).toEqual([]); // initial emit
-      expect(events[1]).toEqual([2]);
-      expect(events[2].sort()).toEqual([2,3]);
-      expect(events[3]).toEqual([3]);
+  expect(events[1]).toEqual(['fav-2']);
+  expect(events[2].sort()).toEqual(['fav-2','fav-3']);
+  expect(events[3]).toEqual(['fav-3']);
       sub.unsubscribe();
       done();
     });

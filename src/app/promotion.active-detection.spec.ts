@@ -7,7 +7,7 @@ describe('Promotion active detection (generic cases)', () => {
 
   function buildModel(validity: any, todayIso: string, period: 'day' | 'week' | 'month' | 'year' = 'week') {
     const promo: any = {
-      id: 0,
+  id: 'act-0',
       title: 'Test Promo',
       payment_methods: [],
       discount: 10,
@@ -89,7 +89,8 @@ describe('Promotion active detection (generic cases)', () => {
     const validity = { from: '2025-08-20', to: '2025-10-05', days_of_week: allWeek };
     const sep = buildModel(validity, '2025-09-10', 'month');
     expect(sep.activeDate).not.toBeNull();
-    expect(sep.activeDate.to.toISOString().slice(0, 10)).toBe('2025-09-30');
+  expect(sep.activeDate).not.toBeNull();
+  expect(sep.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-09-30');
   });
 
   it('for the last partial month, activeDate.to stops at the validity upper bound', () => {
@@ -97,24 +98,27 @@ describe('Promotion active detection (generic cases)', () => {
     const validity = { from: '2025-08-20', to: '2025-10-05', days_of_week: allWeek };
     const oct = buildModel(validity, '2025-10-01', 'month');
     expect(oct.activeDate).not.toBeNull();
-    expect(oct.activeDate.to.toISOString().slice(0, 10)).toBe('2025-10-05');
+  expect(oct.activeDate).not.toBeNull();
+  expect(oct.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-10-05');
   });
 
   it('period=week with weekend [5,6,0] groups Fri-Sun; activeDate.from/to bound the weekend', () => {
     const validity = { from: '2025-09-01', to: '2025-09-30', days_of_week: [5, 6, 0] };
     const sat = buildModel(validity, '2025-09-06', 'week');
     expect(sat.activeDate).not.toBeNull();
-    expect(sat.activeDate.from.toISOString().slice(0, 10)).toBe('2025-09-05');
-    expect(sat.activeDate.to.toISOString().slice(0, 10)).toBe('2025-09-07');
+  expect(sat.activeDate).not.toBeNull();
+  expect(sat.activeDate!.from.toISOString().slice(0, 10)).toBe('2025-09-05');
+  expect(sat.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-09-07');
   });
 
   it('period=week with single day [3]=Wednesday yields one-day interval', () => {
     const validity = { from: '2025-09-01', to: '2025-09-30', days_of_week: [3] };
     const wed = buildModel(validity, '2025-09-03', 'week');
     expect(wed.activeDate).not.toBeNull();
-    const d = wed.activeDate.from.toISOString().slice(0, 10);
+  expect(wed.activeDate).not.toBeNull();
+  const d = wed.activeDate!.from.toISOString().slice(0, 10);
     expect(d).toBe('2025-09-03');
-    expect(wed.activeDate.to.toISOString().slice(0, 10)).toBe('2025-09-03');
+  expect(wed.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-09-03');
   });
 
   it('period=week with all days returns a single full-range interval', () => {
@@ -122,15 +126,17 @@ describe('Promotion active detection (generic cases)', () => {
     const validity = { from: '2025-09-01', to: '2025-09-10', days_of_week: allWeek };
     const any = buildModel(validity, '2025-09-05', 'week');
     expect(any.activeDate).not.toBeNull();
-    expect(any.activeDate.from.toISOString().slice(0, 10)).toBe('2025-09-01');
-    expect(any.activeDate.to.toISOString().slice(0, 10)).toBe('2025-09-10');
+  expect(any.activeDate).not.toBeNull();
+  expect(any.activeDate!.from.toISOString().slice(0, 10)).toBe('2025-09-01');
+  expect(any.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-09-10');
   });
 
   it('period=week weekend across month boundary (Aug 29-31) still groups correctly', () => {
     const validity = { from: '2025-08-25', to: '2025-09-10', days_of_week: [5, 6, 0] };
     const fri = buildModel(validity, '2025-08-29', 'week');
     expect(fri.activeDate).not.toBeNull();
-    expect(fri.activeDate.from.toISOString().slice(0, 10)).toBe('2025-08-29');
-    expect(fri.activeDate.to.toISOString().slice(0, 10)).toBe('2025-08-31');
+  expect(fri.activeDate).not.toBeNull();
+  expect(fri.activeDate!.from.toISOString().slice(0, 10)).toBe('2025-08-29');
+  expect(fri.activeDate!.to.toISOString().slice(0, 10)).toBe('2025-08-31');
   });
 });

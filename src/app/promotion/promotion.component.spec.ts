@@ -16,7 +16,7 @@ describe('PromotionComponent', () => {
     component = fixture.componentInstance;
     // Provide minimal input required by template
     component.promotion = {
-      id: 1,
+      id: 'promo-test-1',
       title: 'Test Promo',
       payment_methods: [],
       discount: 10,
@@ -33,5 +33,28 @@ describe('PromotionComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('legacy progress uses purchase proportion', () => {
+    component.promotion = {
+      discount: 25,
+      limit: { amount: 20000 },
+      calculatedPurchaseAmount: 80000,
+      activeDate: { totalAmountPurchased: 20000, totalAmountRefunded: 5000 }
+    };
+    const pct = component.availableProgress();
+    expect(pct).toBe(25); // 20k / 80k
+  });
+
+  it('totalCap progress uses refund proportion, not raw purchase', () => {
+    component.promotion = {
+      discount: 20,
+      limit: { amount: 1000, totalCap: 5000 },
+      // calculatedPurchaseAmount would be per-purchase theoretical (5000) but not used for totalCap progress
+      calculatedPurchaseAmount: 5000,
+      activeDate: { totalAmountPurchased: 12000, totalAmountRefunded: 1000 }
+    };
+    const pct = component.availableProgress();
+    expect(pct).toBe(20); // 1000 / 5000
   });
 });

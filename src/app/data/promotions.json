@@ -1,6 +1,6 @@
 [
     {
-        "id": 1,
+        "id": "a3e6a1f2-6d5c-4d2a-9b32-1f2c6b3d9e01",
         "title": "Supermercados Mayoristas",
         "payment_methods": [
             "Modo / BNA+ / Crédito"
@@ -10,45 +10,39 @@
             "amount": 12000,
             "times": "each",
             "mode": "user",
-            "period": "month"
+            "period": "week"
         },
         "validity": {
             "from": "2025-05-01",
-            "to": "2025-09-30",
+            "to": "2025-11-30",
             "days_of_week": [
                 3
             ]
         }
     },
     {
-        "id": 2,
-        "title": "Shell",
+        "id": "b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123",
+        "title": "YPF, Shell y Axion",
         "payment_methods": [
-            "Modo / BNA+ / Crédito y Débito"
+            "Modo / Buep / Crédito"
         ],
-        "discount": 25,
+        "discount": 10,
         "limit": {
-            "amount": 20000,
+            "amount": 10000,
             "times": "each",
             "mode": "user",
             "period": "month"
         },
         "validity": {
-            "from": "2024-08-09",
-            "to": "2025-09-30",
+            "from": "2025-01-01",
+            "to": "2025-12-31",
             "days_of_week": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
+                0
             ]
         }
     },
     {
-        "id": 3,
+        "id": "c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f",
         "title": "Carnicerías DNI",
         "payment_methods": [
             "Cta DNI / Crédito y Débito"
@@ -62,7 +56,7 @@
         },
         "validity": {
             "from": "2025-09-01",
-            "to": "2025-09-31",
+            "to": "2025-09-30",
             "specific_dates": [
                 "2025-09-06",
                 "2025-09-20"
@@ -70,7 +64,7 @@
         }
     },
     {
-        "id": 4,
+        "id": "d4e5f6a7-b8c9-4012-9345-6d7e8f9a0b1c",
         "title": "Comercios de Barrio",
         "payment_methods": [
             "Modo / BNA+ / Crédito y Débito"
@@ -93,7 +87,7 @@
         }
     },
     {
-        "id": 5,
+        "id": "e5f6a7b8-c9d0-4123-a456-7e8f9a0b1c2d",
         "title": "Dia",
         "payment_methods": [
             "Modo / Santander / Crédito y Débito"
@@ -114,33 +108,37 @@
         }
     },
     {
-        "id": 6,
-        "title": "Supermercados",
+        "id": "f6a7b8c9-d0e1-4234-b567-8f9a0b1c2d3e",
+        "title": "Dia Modo Bancos",
         "payment_methods": [
-            "Modo / BNA+ / Crédito y Débito",
             "Modo / Galicia / Crédito y Débito",
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
             "Modo / Buep / Crédito y Débito"
         ],
         "discount": 25,
+        "minAmount": 20000,
         "limit": {
-            "amount": 10000,
+            "amount": 20000,
             "times": "each",
             "mode": "payment_methods",
-            "period": "week"
+            "period": "month"
         },
         "validity": {
-            "from": "2025-07-04",
-            "to": "2025-09-27",
+            "from": "2025-09-19",
+            "to": "2025-10-31",
             "days_of_week": [
                 5,
                 6
             ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
         }
     },
     {
-        "id": 7,
+        "id": "a7b8c9d0-e1f2-4345-c678-9a0b1c2d3e4f",
         "title": "Carrefour",
         "payment_methods": [
             "Modo / Santander / Crédito y Débito"
@@ -154,14 +152,14 @@
         },
         "validity": {
             "from": "2024-10-01",
-            "to": "2025-03-31",
+            "to": "2025-10-31",
             "days_of_week": [
                 5
             ]
         }
     },
     {
-        "id": 8,
+        "id": "b8c9d0e1-f2a3-4456-d789-a0b1c2d3e4f5",
         "title": "Vital con Ciudad y Buepp",
         "payment_methods": [
             "Modo / Ciudad / Crédito y Débito"
@@ -178,6 +176,252 @@
             "to": "2025-12-31",
             "days_of_week": [
                 1
+            ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
+        }
+    },
+    {
+        "id": "c9d0e1f2-a3b4-4567-e89a-b1c2d3e4f506",
+        "title": "Mastercard especial Noviembre",
+        "payment_methods": [],
+        "discount": 20,
+        "limit": {
+            "amount": 1000,
+            "times": "each",
+            "mode": "user",
+            "period": "month",
+            "totalCap": 5000
+        },
+        "validity": {
+            "from": "2025-11-01",
+            "to": "2025-11-30",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        },
+        "stacking": {
+            "stackable": true,
+            "type": "extra",
+            "appliesWith": [
+                "f6a7b8c9-d0e1-4234-b567-8f9a0b1c2d3e",
+                "e1f2a3b4-c5d6-4789-a01c-d3e4f5061728"
+            ]
+        }
+    },
+    {
+        "id": "d0e1f2a3-b4c5-4678-f90b-c2d3e4f50617",
+        "title": "Modo Especial Noviembre",
+        "payment_methods": [],
+        "discount": 10,
+        "minAmount": 40000,
+        "limit": {
+            "amount": 6000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-11-01",
+            "to": "2025-11-30",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        },
+        "stacking": {
+            "stackable": true,
+            "type": "extra",
+            "appliesWith": [
+                "f6a7b8c9-d0e1-4234-b567-8f9a0b1c2d3e",
+                "b8c9d0e1-f2a3-4456-d789-a0b1c2d3e4f5",
+                "e1f2a3b4-c5d6-4789-a01c-d3e4f5061728"
+            ]
+        }
+    },
+    {
+        "id": "e1f2a3b4-c5d6-4789-a01c-d3e4f5061728",
+        "title": "Vea",
+        "payment_methods": [
+            "Modo / BNA+ / Crédito y Débito",
+            "Modo / Galicia / Crédito y Débito",
+            "Modo / Supervielle / Crédito y Débito",
+            "Modo / Macro / Crédito y Débito",
+            "Modo / Buep / Crédito y Débito",
+            "Modo / Santander / Crédito y Débito"
+        ],
+        "discount": 25,
+        "minAmount": 20000,
+        "limit": {
+            "amount": 10000,
+            "times": "each",
+            "mode": "payment_methods",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-10-03",
+            "to": "2025-10-04",
+            "days_of_week": [
+                5,
+                6
+            ]
+        },
+        "stacking": {
+            "stackable": true,
+            "type": "base"
+        }
+    },
+    {
+        "id": "fd79025c-b822-4b15-848a-fa87febe883c",
+        "title": "Toledo Modo Bancos",
+        "payment_methods": [
+            "Modo / Supervielle / Crédito y Débito",
+            "Modo / Macro / Crédito y Débito",
+            "Modo / Buep / Crédito y Débito",
+            "Modo / BBVA / Crédito y Débito"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 10000,
+            "times": "each",
+            "mode": "payment_methods",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-10-03",
+            "to": "2025-10-31",
+            "days_of_week": [
+                5
+            ]
+        },
+        "stacking": {
+            "stackable": false,
+            "type": "base"
+        }
+    },
+    {
+        "id": "4eb5db14-e52e-4563-869c-8894f6643ebd",
+        "title": "Ferias y Mercados con cta DNI",
+        "payment_methods": [
+            "Cta DNI / Crédito y Débito"
+        ],
+        "discount": 40,
+        "limit": {
+            "amount": 6000,
+            "times": "each",
+            "mode": "user",
+            "period": "week"
+        },
+        "validity": {
+            "from": "2025-10-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        }
+    },
+    {
+        "id": "542f55da-f9f0-4bf9-846f-447db8119e99",
+        "title": "Cines CCA y PA con cta DNI",
+        "payment_methods": [
+            "Cta DNI / Débito"
+        ],
+        "discount": 50,
+        "limit": {
+            "amount": 0,
+            "times": "each",
+            "mode": "user",
+            "period": "week"
+        },
+        "validity": {
+            "from": "2025-09-01",
+            "to": "2025-11-30",
+            "days_of_week": [
+                1,
+                2
+            ]
+        }
+    },
+    {
+        "id": "872dd444-62d8-4b13-aefb-bf5e0856a567",
+        "title": "Farmacity con prepaga Ualá",
+        "payment_methods": [
+            "Ualá / Débito"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 6000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-09-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                5
+            ]
+        }
+    },
+    {
+        "id": "93062554-43df-4f16-acdc-bc02a4efd1b9",
+        "title": "Farmacity con crédito Ualá",
+        "payment_methods": [
+            "Ualá / Crédito"
+        ],
+        "discount": 25,
+        "limit": {
+            "amount": 10000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-09-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                5
+            ]
+        }
+    },
+    {
+        "id": "32bfb453-0598-4fe2-8d82-c134ce89fb41",
+        "title": "Gastronomía con crédito Ualá",
+        "payment_methods": [
+            "NFC / Ualá / Débito y Crédito"
+        ],
+        "discount": 30,
+        "limit": {
+            "amount": 10000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-09-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                5,
+                6
             ]
         }
     }

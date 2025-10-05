@@ -27,7 +27,13 @@ describe('AppComponent', () => {
   // Expect the new topbar with filter label to be present
   const topbar = compiled.querySelector('.topbar');
   expect(topbar).toBeTruthy();
-  // Default filter is 'active-future' -> label should show 'Activas y futuras'
+  // Default state is collapsed; indicator shorthand should appear
+  expect(topbar?.textContent).toContain('Activas+Futuras');
+  // Expand toolbar and expect full label
+  const toggleBtn = compiled.querySelector('.tb-toggle') as HTMLButtonElement;
+  expect(toggleBtn).toBeTruthy();
+  toggleBtn.click();
+  fixture.detectChanges();
   expect(topbar?.textContent).toContain('Activas y futuras');
   });
 });

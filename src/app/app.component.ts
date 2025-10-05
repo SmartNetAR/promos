@@ -1,24 +1,26 @@
-import { Component, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ElementRef, HostListener, inject, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { PromotionsService } from './promotions.service';
 import { PromotionComponent } from './promotion/promotion.component';
 import { ToastContainerComponent } from './toast/toast-container.component';
-import { PurchaseFlyoutComponent, PurchaseFormData } from './purchase-flyout/purchase-flyout.component';
+import { StackedPurchaseFlyoutComponent } from './stacking/stacked-purchase-flyout.component';
 import { ShoppingService } from './shopping.service';
 import { ToastService } from './toast.service';
 import { FavouritesService } from './favourites.service';
 import { Subject, takeUntil } from 'rxjs';
 import { PreferencesService, FilterMode } from './preferences.service';
+import { PromotionsRegistryService } from './promotions-registry.service';
+import { SelectionService } from './selection.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, PromotionComponent, ToastContainerComponent, PurchaseFlyoutComponent],
+  imports: [CommonModule, RouterOutlet, PromotionComponent, ToastContainerComponent, StackedPurchaseFlyoutComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   title = 'promos';
   promotions = this.promotionsService.getPromotions() || [];
   favouritePromotions = [] as any[];
@@ -27,9 +29,17 @@ export class AppComponent implements OnDestroy {
   countActive = 0;
   countActiveFuture = 0;
   countAll = 0;
+  stackFlyoutOpen = false;
+  selectedPromotions: any[] = [];
+  toolbarExpanded = false;
+  extraPanelHeight = 0; // for smooth height animation
+  @ViewChild('extraPanelRef') extraPanelRef?: ElementRef<HTMLDivElement>;
+  private resizeObserver?: ResizeObserver;
+  private selection = inject(SelectionService);
+  private registry = inject(PromotionsRegistryService);
 
   private destroyed$ = new Subject<void>();
-  @ViewChild(PurchaseFlyoutComponent) purchaseFlyout?: PurchaseFlyoutComponent;
+  @ViewChild(StackedPurchaseFlyoutComponent) unifiedFlyout?: StackedPurchaseFlyoutComponent;
   @ViewChild('filterMenu') filterMenu?: ElementRef<HTMLUListElement>;
 
   constructor(
@@ -38,7 +48,8 @@ export class AppComponent implements OnDestroy {
   private readonly shopping: ShoppingService,
   private readonly toast: ToastService,
   public readonly prefs: PreferencesService,
-  private readonly el: ElementRef
+  private readonly el: ElementRef,
+  private readonly renderer: Renderer2
   ) {
     this.favs.favourites$
       .pipe(takeUntil(this.destroyed$))
@@ -49,10 +60,29 @@ export class AppComponent implements OnDestroy {
       .subscribe(() => this.recomputeLists());
 
   this.recomputeLists();
+  this.selection.selection$.pipe(takeUntil(this.destroyed$)).subscribe(() => this.refreshSelectedPromotions());
+  }
+
+  ngOnInit(): void {
+    // Restore persisted toolbar state
+    try {
+      const saved = localStorage.getItem('toolbarExpanded');
+      if (saved === '1') this.toolbarExpanded = true; else if (saved === '0') this.toolbarExpanded = false;
+    } catch {}
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize height if starting expanded
+    setTimeout(() => this.updateExtraPanelHeight(true), 0);
+    if ('ResizeObserver' in window) {
+      this.resizeObserver = new ResizeObserver(() => this.updateExtraPanelHeight(false));
+      if (this.extraPanelRef?.nativeElement) this.resizeObserver.observe(this.extraPanelRef.nativeElement);
+    }
   }
 
   recomputeLists() {
   const all = this.promotionsService.getPromotions() || [];
+  this.registry.register(all);
   const mode = this.prefs.state$.value.filter;
   // counts
   this.countAll = all.length;
@@ -115,13 +145,78 @@ export class AppComponent implements OnDestroy {
 
 
   openPurchaseForm(promo: any, paymentMethod: string) {
-  this.purchaseFlyout?.show(promo, paymentMethod);
-    // temporarily store selected promo for submission
+    // Unificar comportamiento: "Agregar compra" actúa igual que "Combinar"
+    // tomando el conjunto actual seleccionado (checkboxes) y, si es compatible,
+    // agrega la promo clickeada. Si no, reemplaza la selección.
+    this.refreshSelectedPromotions();
+
+    // Helper para validar reglas de stacking (1 base + N extras compatibles)
+    const validateStack = (promos: any[]): boolean => {
+      if (promos.length <= 1) return true;
+      const bases = promos.filter(p => p?.stacking?.type === 'base');
+      const extras = promos.filter(p => p?.stacking?.type === 'extra');
+      if (bases.length > 1) return false; // 1 base máx
+      if (bases.length === 0 && extras.length > 1) return false; // no 2 extras sin base
+      if (bases.length === 1) {
+        const base = bases[0];
+        for (const ex of extras) {
+          const list: string[] | undefined = ex?.stacking?.appliesWith;
+          if (list && !list.includes(base.id)) return false; // extra incompatible
+        }
+      }
+      return true;
+    };
+
+    let candidate = [...this.selectedPromotions];
+    // Asegurar que la promo clickeada esté en el set candidato
+    if (!candidate.find(p => p.id === promo.id)) {
+      candidate.push(promo);
+    }
+
+    // Si la promo NO es stackeable y había selección previa, forzar reemplazo
+    const needsReplaceBecauseNonStackable = !promo.isStackable && this.selectedPromotions.length > 0;
+    // Validar compatibilidad completa
+    const valid = !needsReplaceBecauseNonStackable && validateStack(candidate);
+    if (!valid) {
+      if (this.selectedPromotions.length > 0) {
+        this.toast.info('Selección previa reemplazada: la nueva promoción no es combinable con las seleccionadas.');
+      }
+      candidate = [promo];
+    }
+
+    // Sincronizar selección (checkboxes) con el set final para coherencia visual/UX
+    this.selection.clear();
+    candidate.forEach(p => this.selection.toggle(String(p.id)));
+    this.selectedPromotions = candidate;
+
+    if (this.unifiedFlyout) {
+      this.stackFlyoutOpen = true;
+      this.unifiedFlyout.initialPaymentMethod = paymentMethod;
+    }
     (this as any)._selectedPromo = promo;
   }
 
   openEditPurchase(promo: any, purchase: any) {
-    this.purchaseFlyout?.showEdit(promo, purchase);
+    // Determine if stacked purchase
+    if (purchase?.promoIds?.length > 1) {
+      // reconstruct promotions set from ids
+      const all = [...this.favouritePromotions, ...this.otherPromotions];
+  const promos = purchase.promoIds.map((id: string) => all.find(p => String(p.id) === id)).filter(Boolean);
+      this.selectedPromotions = promos;
+      if (this.unifiedFlyout) {
+        this.unifiedFlyout.showEdit(purchase, promos);
+        this.stackFlyoutOpen = true;
+      }
+    } else {
+      // single purchase edit uses unified as well
+      if (promo) {
+        this.selectedPromotions = [promo];
+        if (this.unifiedFlyout) {
+          this.unifiedFlyout.showEdit(purchase, [promo]);
+          this.stackFlyoutOpen = true;
+        }
+      }
+    }
     (this as any)._selectedPromo = promo;
   }
 
@@ -164,22 +259,72 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  handlePurchaseSubmit(data: PurchaseFormData) {
-    const promo = (this as any)._selectedPromo;
-    if (!promo) return;
-  this.shopping.addPurchaseDirect(promo, data.paymentMethod, data.amount, data.date, data.storeName);
-  this.toast.success('Compra agregada');
-  this.recomputeLists();
-  }
-
-  handlePurchaseUpdate(data: any) {
-    this.shopping.editPurchase({ id: data.id, amount: data.amount, date: data.date, storeName: data.storeName });
-    this.toast.success('Compra actualizada');
-    this.recomputeLists();
-  }
+  // Legacy handlers removed (single add/edit now flows through unified flyout submission path)
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+  }
+
+  selectedCount() { return this.selection.size(); }
+  clearSelection() { this.selection.clear(); }
+  openStackFlyout() { this.refreshSelectedPromotions(); if (this.selectedPromotions.length >=1) this.stackFlyoutOpen = true; }
+  toggleToolbar() {
+    this.toolbarExpanded = !this.toolbarExpanded;
+    try { localStorage.setItem('toolbarExpanded', this.toolbarExpanded ? '1' : '0'); } catch {}
+    this.updateExtraPanelHeight(true);
+  }
+  filterIsNotAll() { return this.prefs.state$.value.filter !== 'all'; }
+
+  private updateExtraPanelHeight(animate: boolean) {
+    const panel = this.extraPanelRef?.nativeElement; if (!panel) return;
+    if (this.toolbarExpanded) {
+      // measure scrollHeight
+      const target = panel.scrollHeight;
+      if (animate) {
+        this.extraPanelHeight = target;
+      } else {
+        // if already open and content changed, adjust without jank
+        this.extraPanelHeight = target;
+      }
+    } else {
+      this.extraPanelHeight = 0;
+    }
+  }
+  private refreshSelectedPromotions() {
+    const ids = new Set(this.selection.values());
+    const all = [...this.favouritePromotions, ...this.otherPromotions];
+    this.selectedPromotions = all.filter(p => ids.has(p.id));
+  }
+  handleStackedPurchase(evt: { promotions: any[]; amount: number; date: string; storeName: string; paymentMethod: string; breakdown: any; finalAmount: number }) {
+    const editingId = (this.unifiedFlyout as any)?.editId;
+    const isEdit = !!editingId;
+    if (evt.promotions.length === 1) {
+      const promo = evt.promotions[0];
+      if (isEdit) {
+        this.shopping.editPurchase({ id: editingId, amount: evt.amount, date: evt.date, storeName: evt.storeName });
+        this.toast.success('Compra actualizada');
+      } else {
+        this.shopping.addPurchaseDirect(promo, evt.paymentMethod, evt.amount, evt.date, evt.storeName);
+        this.toast.success('Compra agregada');
+      }
+    } else {
+      if (isEdit) {
+        this.shopping.editStackedPurchase({ id: editingId, amount: evt.amount, date: evt.date, storeName: evt.storeName, breakdown: evt.breakdown, finalAmount: evt.finalAmount, paymentMethod: evt.paymentMethod });
+        this.toast.success('Compra combinada actualizada');
+      } else {
+        this.shopping.addStackedPurchase(evt.promotions, evt.paymentMethod, evt.amount, evt.date, evt.storeName, evt.breakdown, evt.finalAmount);
+        this.toast.success('Compra combinada guardada');
+      }
+    }
+    this.selection.clear();
+    this.stackFlyoutOpen = false;
+    this.recomputeLists();
+  }
+
+  // Recalcular listas cuando una compra individual fue eliminada dentro de un componente hijo
+  onPurchasesChanged() {
+    this.recomputeLists();
+    this.refreshSelectedPromotions();
   }
 }

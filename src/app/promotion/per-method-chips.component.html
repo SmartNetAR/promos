@@ -1,0 +1,13 @@
+<ul class="pmc-list" *ngIf="derivedStats?.length" aria-label="Detalle por método de pago">
+  <li class="pmc-chip" *ngFor="let s of derivedStats; trackBy: trackByMethod" [attr.aria-label]="ariaLabel(s)" [title]="ariaLabel(s)">
+    <div class="pmc-head">
+      <span class="pmc-name">{{ s.method }}</span>
+      <span class="pmc-figures">{{ s.refund | currency:undefined:'symbol':'1.0-0' }} / {{ cap | currency:undefined:'symbol':'1.0-0' }}</span>
+      <button type="button" class="pmc-add icon-btn primary" (click)="onAdd(s.method)" [attr.aria-label]="'Agregar compra con ' + s.method" title="Agregar compra">
+        <span class="material-symbols-rounded icon">add_circle</span>
+      </button>
+    </div>
+  <div class="pmc-bar"><span class="pmc-fill" [style.width.%]="barWidthSafe(s)" [style.background]="barColor(s)"></span></div>
+    <div class="pmc-saldo" *ngIf="showSaldo">Saldo: {{ s.remainingRefund | currency:undefined:'symbol':'1.0-0' }}</div>
+  </li>
+</ul>

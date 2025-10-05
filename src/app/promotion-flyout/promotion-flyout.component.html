@@ -1,0 +1,55 @@
+<div class="backdrop" (click)="close()" *ngIf="open"></div>
+<aside class="flyout" [class.open]="open" aria-label="Nueva promoción">
+  <header class="flyout-header">
+    <h3>Nueva promoción</h3>
+    <button type="button" class="icon" (click)="close()" aria-label="Cerrar">×</button>
+  </header>
+  <form (ngSubmit)="submit()" *ngIf="open" class="form">
+    <label>
+      Título
+      <input [(ngModel)]="model.title" name="title" required placeholder="Ej: Supermercados Mayoristas" />
+    </label>
+    <label>
+      Métodos de pago (separados por coma)
+      <input [(ngModel)]="paymentMethods" name="paymentMethods" placeholder="Ej: Modo / BNA+ / Crédito" />
+    </label>
+    <label>
+      Descuento (%)
+      <input type="number" [(ngModel)]="model.discount" name="discount" min="1" max="100" required />
+    </label>
+    <fieldset>
+      <legend>Tope</legend>
+      <label>Monto<input type="number" [(ngModel)]="model.limit.amount" name="limit_amount" required /></label>
+      <label>Veces
+        <select [(ngModel)]="model.limit.times" name="limit_times">
+          <option value="each">Cada periodo</option>
+          <option value="once">Una vez</option>
+        </select>
+      </label>
+      <label>Modo
+        <select [(ngModel)]="model.limit.mode" name="limit_mode">
+          <option value="user">Por usuario</option>
+          <option value="payment_methods">Por método de pago</option>
+        </select>
+      </label>
+      <label>Periodo
+        <select [(ngModel)]="model.limit.period" name="limit_period">
+          <option value="day">Día</option>
+          <option value="week">Semana</option>
+          <option value="month">Mes</option>
+        </select>
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>Vigencia</legend>
+      <label>Desde<input type="date" [(ngModel)]="model.validity.from" name="valid_from" required /></label>
+      <label>Hasta<input type="date" [(ngModel)]="model.validity.to" name="valid_to" required /></label>
+      <label>Días de semana (0..6, separados por coma)<input [(ngModel)]="daysOfWeek" name="days_of_week" placeholder="Ej: 5,6" /></label>
+      <label>Fechas específicas (YYYY-MM-DD, separadas por coma)<input [(ngModel)]="specificDates" name="specific_dates" placeholder="Ej: 2025-09-06,2025-09-20" /></label>
+    </fieldset>
+    <footer class="actions">
+      <button type="button" class="btn ghost" (click)="close()">Cancelar</button>
+      <button type="submit" class="btn primary">Guardar</button>
+    </footer>
+  </form>
+</aside>

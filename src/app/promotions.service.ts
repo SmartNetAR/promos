@@ -1,25 +1,27 @@
 import { Injectable } from '@angular/core';
-import { isAfter, isBefore, parseISO, startOfDay } from 'date-fns';
-import data from './data/promotions.json';
-import { ShoppingService } from './shopping.service';
-import { ValidDate } from './valid-date';
-import { DateIntervalService } from './date-interval.service';
-import { PromotionModel } from './promotion.model';
+import { startOfDay } from 'date-fns';
 import { ClockService } from './clock.service';
+import data from './data/promotions.json';
+import { DateIntervalService } from './date-interval.service';
 import { FavouritesService } from './favourites.service';
+import { PromotionModel } from './promotion.model';
+import { PromotionsRegistryService } from './promotions-registry.service';
+import { ShoppingService } from './shopping.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PromotionsService {
-  favouriteIds: number[] = [];
-  // private readonly today = startOfDay(parseISO("2025-08-27"));
-  private get today() { return this.clock.today(); }
+  favouriteIds: (string|number)[] = [];
+  // Dynamically resolve "today" so tests can control current date through ClockService
+  private get today() { return startOfDay(this.clock.today()); }
+  // private readonly today = startOfDay(parseISO("2025-09-22"));
 
   constructor(
     private readonly shoppingService: ShoppingService,
     private readonly dateSvc: DateIntervalService,
-    private readonly clock: ClockService,
+  private readonly clock: ClockService,
+  private readonly registry: PromotionsRegistryService,
   private readonly favs: FavouritesService
   ) {
     // this.favouriteIds.push(1, 4, 6);
@@ -28,13 +30,13 @@ export class PromotionsService {
 
   getPromotions() {
 
-    const mayoristas = 1;
-    const shell = 2;
-    const dni = 3;
-    const comercios_de_barrio = 4;
-    const dia = 5;
-    const supermercados = 6;
-    const carrefour = 7;
+  const mayoristas = 'a3e6a1f2-6d5c-4d2a-9b32-1f2c6b3d9e01';
+  const shell = 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123';
+  const dni = 'c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f';
+  const comercios_de_barrio = 'd4e5f6a7-b8c9-4012-9345-6d7e8f9a0b1c';
+  const dia = 'e5f6a7b8-c9d0-4123-a456-7e8f9a0b1c2d';
+  const supermercados = 'f6a7b8c9-d0e1-4234-b567-8f9a0b1c2d3e';
+  const carrefour = 'a7b8c9d0-e1f2-4345-c678-9a0b1c2d3e4f';
     const todas = true;
 
     const filterPromos = ((promo: any) =>
@@ -44,14 +46,17 @@ export class PromotionsService {
       todas
     );
 
-  return data
+  const result = data
       .filter(filterPromos)
       .map(promo => {
-        const purchases = this.shoppingService.getPurchasesByPromoId(promo.id);
-    const model = new PromotionModel({ ...promo, isFavourite: this.favs.has(promo.id) }, this.dateSvc, this.today, purchases);
+    const purchases = this.shoppingService.getPurchasesByPromoId(String(promo.id));
+  const model = new PromotionModel({ ...promo, isFavourite: this.favs.has(String(promo.id)) }, this.dateSvc, this.today, purchases);
         // Keep shape compatible with components by returning the model instance (it exposes same getters/props)
         return model as any;
       });
+    this.registry.register(result);
+    (window as any).__promos = result; // optional legacy global for components still using heuristic
+    return result;
   }
 
   getFavouritePromotions() {

@@ -1,0 +1,55 @@
+<div class="backdrop" *ngIf="open" (click)="close.emit()"></div>
+<aside class="flyout" [class.open]="open" *ngIf="open">
+  <header class="flyout-header">
+    <h3>{{ isEdit ? (promotions?.length === 1 ? 'Editar compra' : 'Editar combinada') : (promotions?.length === 1 ? 'Agregar compra' : 'Compra combinada') }}</h3>
+    <button type="button" class="icon" (click)="close.emit()" aria-label="Cerrar">×</button>
+  </header>
+  <form (ngSubmit)="submit()" *ngIf="promotions" class="form">
+    <div class="hint" *ngIf="promotions?.length === 1">{{ promotions[0].title }}</div>
+    <div class="hint" *ngIf="promotions?.length && promotions.length > 1">
+      {{ combinedTitles() }}
+    </div>
+    <label>Monto
+      <input type="number" min="1" step="0.01" [(ngModel)]="amount" name="amount" required (input)="recalc()" />
+    </label>
+    <label>Fecha
+      <input type="date" [(ngModel)]="date" name="date" required />
+    </label>
+    <label>Comercio
+      <input type="text" [(ngModel)]="storeName" name="storeName" required (input)="recalc()" />
+    </label>
+    <label *ngIf="paymentMethods.length">Medio de pago
+      <select [(ngModel)]="paymentMethod" name="paymentMethod" required (change)="recalc()">
+        <option *ngFor="let m of paymentMethods" [value]="m">{{ m }}</option>
+      </select>
+    </label>
+
+    <section class="breakdown" *ngIf="promotions.length">
+      <div class="breakdown-inner">
+        <p class="min-hint" *ngIf="unmetMinimums.length">No aplican todavía: {{ unmetMinimumsLabel() }}</p>
+        <p class="min-hint" *ngIf="unmetMinimums.length">{{ minimumsHelp() }}</p>
+        <p class="min-hint ok" *ngIf="!unmetMinimums.length && hasMinimums">Se cumplen los mínimos de compra.</p>
+        <table>
+          <thead>
+            <tr><th>Promo</th><th>%</th><th>Base</th><th>Desc</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let b of breakdown" [class.row-unmet]="rowUnmet(b.promoId)">
+              <td>{{ findTitle(b.promoId) }}</td>
+              <td>{{ b.percent }}%</td>
+              <td>{{ b.baseApplied | number:'1.0-0' }}</td>
+              <td>{{ b.discountValue | number:'1.0-0' }}</td>
+            </tr>
+          </tbody>
+          <tfoot><tr><td colspan="3">Total</td><td>{{ totalDiscount | number:'1.0-0' }}</td></tr></tfoot>
+        </table>
+        <p class="placeholder" *ngIf="amount <= 0">Ingresá un monto para calcular descuentos.</p>
+        <p *ngIf="amount > 0 && finalAmount !== null">Monto final: <strong>{{ finalAmount | number:'1.0-0' }}</strong></p>
+      </div>
+    </section>
+    <footer class="actions">
+      <button type="button" class="btn ghost" (click)="close.emit()">Cancelar</button>
+      <button type="submit" class="btn primary" [disabled]="!canSubmit()">Confirmar</button>
+    </footer>
+  </form>
+</aside>

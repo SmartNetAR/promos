@@ -1,0 +1,6 @@
+<div class="toast-wrap" *ngIf="toasts.length > 0">
+  <div class="toast enter" *ngFor="let t of toasts" [class.success]="t.type==='success'" [class.error]="t.type==='error'">
+    <span class="msg">{{ t.message }} <small class="count" *ngIf="(t.count ?? 1) > 1">×{{ t.count }}</small></span>
+    <button type="button" class="close" (click)="dismiss(t.id)" aria-label="Cerrar">×</button>
+  </div>
+</div>

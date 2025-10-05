@@ -1,0 +1,13 @@
+@import '../shared/flyout-shared.css';
+:host { display: contents; }
+.hint { font-size:.8rem; color:#374151; }
+.edit-warning { background:#fef3c7; color:#92400e; padding:6px 8px; border:1px solid #fcd34d; border-radius:6px; font-size:.7rem; }
+.breakdown { border-top:1px solid #eee; padding-top:8px; }
+.min-hint { font-size:.65rem; color:#b45309; margin:4px 0; }
+.min-hint.ok { color:#047857; }
+table { width:100%; border-collapse:collapse; font-size:.7rem; }
+th, td { padding:4px 6px; border-bottom:1px solid #f1f5f9; text-align:right; }
+th:first-child, td:first-child { text-align:left; }
+tfoot td { font-weight:600; }
+.placeholder { font-size:.75rem; color:#6b7280; margin:0; }
+.row-unmet { opacity:.55; }

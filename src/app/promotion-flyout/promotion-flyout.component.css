@@ -1,0 +1,4 @@
+@import '../shared/flyout-shared.css';
+:host { display: contents; }
+fieldset { border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; }
+legend { color: #374151; }

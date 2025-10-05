@@ -1,6 +1,9 @@
 <section class="promo-card">
     <header class="promo-header">
-            <h3 class="promo-title">{{ promotion.title }}</h3>
+        <h3 class="promo-title">
+              <input type="checkbox" class="stack-select" *ngIf="promotion.isStackable" [checked]="isSelected()" (change)="toggleSelect()" [disabled]="isDisabledForStack()" [attr.title]="isDisabledForStack() ? 'Regla: 1 base + múltiples extras compatibles. Primero seleccioná base o una extra inicial.' : 'Seleccionar para combinar'" [attr.aria-label]="'Seleccionar para combinar: '+promotion.title" />
+          {{ promotion.title }}
+        </h3>
             <button class="icon-btn star" type="button" (click)="toggleFavourite()" [class.active]="isFavourite" [attr.aria-label]="isFavourite ? 'Quitar de favoritos' : 'Marcar como favorito'" title="Favorito">
                 <span class="material-symbols-rounded icon" [style.fontVariationSettings]="isFavourite ? '\'FILL\' 1' : '\'FILL\' 0'">grade</span>
             </button>
@@ -28,57 +31,84 @@
 
     <div class="promo-meta">
         <div class="meta-item"><span class="meta-label">Descuento</span><span class="meta-value">{{ promotion.discount }}%</span></div>
-    <div class="meta-item"><span class="meta-label">Tope</span><span class="meta-value">{{ promotion.limit.amount | currency:undefined:'symbol':'1.0-0' }}</span></div>
+    <div class="meta-item"><span class="meta-label">Tope</span><span class="meta-value">{{ promotion.limit.amount === 0 ? 'Sin tope' : (promotion.limit.amount | currency:undefined:'symbol':'1.0-0') }}</span></div>
     <div class="meta-item"><span class="meta-label">Importe</span><span class="meta-value">{{ promotion.calculatedPurchaseAmount | currency:undefined:'symbol':'1.0-0' }}</span></div>
+    <div class="meta-item" *ngIf="promotion.minAmount"><span class="meta-label">Mínimo</span><span class="meta-value" [attr.title]="'Monto mínimo de compra para aplicar los descuentos'">{{ promotion.minAmount | currency:undefined:'symbol':'1.0-0' }}</span></div>
     </div>
 
-    @if (promotion.payment_methods.length > 0) {
-        <div class="payments">
-            <h4>Formas de pago</h4>
-            <ul class="chip-list">
-                @for (paymentMethod of promotion.payment_methods; track paymentMethod) {
-                    <li class="chip">
-                        <span class="chip-label">{{ paymentMethod }}</span>
-                        <button class="icon-btn primary" type="button" (click)="addPurchase(promotion, paymentMethod)" [attr.aria-label]="'Agregar compra con ' + paymentMethod" title="Agregar compra">
-                            <span class="material-symbols-rounded icon">add_circle</span>
-                        </button>
-                    </li>
-                }
-            </ul>
-        </div>
-    }
+        @if (promotion.payment_methods.length > 0 && promotion.stacking?.type !== 'extra') {
+            <div class="payments">
+                <h4>Formas de pago</h4>
+                <app-per-method-chips
+                    [stats]="promotion.activeDate?.perMethod || []"
+                    [methods]="promotion.payment_methods"
+                    [cap]="promotion.limit?.mode === 'payment_methods' ? promotion.limit.amount : (promotion.limit.totalCap || promotion.limit.amount)"
+                    [showSaldo]="true"
+                    (addPurchase)="addPurchase(promotion, $event)" />
+            </div>
+        }
+        @else if (promotion.stacking?.type === 'extra') {
+            <div class="payments extra-progress" *ngIf="promotion.activeDate !== null">
+                <h4>Progreso (extra)</h4>
+                <p class="small-hint">La bonificación extra se aplica a cada compra combinada sin distinguir método de pago.</p>
+                <div class="single-progress" *ngIf="promotion.activeDate.totalAmountRefunded >= 0">
+                    <div class="bar-bg">
+                        <div class="bar-fill" [style.width.%]="availableProgress()" aria-hidden="true"></div>
+                    </div>
+                    <div class="bar-label">Reintegro acumulado: {{ promotion.activeDate.totalAmountRefunded | currency:undefined:'symbol':'1.0-0' }} / {{ (promotion.limit.totalCap || promotion.limit.amount) === 0 ? 'Sin tope' : ((promotion.limit.totalCap || promotion.limit.amount) | currency:undefined:'symbol':'1.0-0') }}</div>
+                </div>
+            </div>
+        }
 
     @if (promotion.activeDate !== null && promotion.activeDate.totalAmountPurchased > 0) {
         <div class="totals">
             <div><span class="meta-label">Comprado</span><span class="meta-value">{{ promotion.activeDate.totalAmountPurchased | currency:undefined:'symbol':'1.0-0' }}</span></div>
             <div><span class="meta-label">Reintegrado</span><span class="meta-value">{{ promotion.activeDate.totalAmountRefunded | currency:undefined:'symbol':'1.0-0' }}</span></div>
-            <div><span class="meta-label">Disponible</span><span class="meta-value strong">{{ promotion.activeDate.availableAmountToPurchase | currency:undefined:'symbol':'1.0-0' }}</span></div>
+                        <div><span class="meta-label">Disponible</span><span class="meta-value strong" [attr.title]="hasSeparatePerPurchaseCap() ? 'Monto de compra que todavía puede generar reintegros (considerando topes por compra + total)' : 'Monto máximo de compra restante que puede generar reintegro'">{{ promotion.activeDate.availableAmountToPurchase | currency:undefined:'symbol':'1.0-0' }}</span></div>
+                        @if (hasSeparatePerPurchaseCap()) {
+                            <div><span class="meta-label">Reintegro restante</span><span class="meta-value" [class.strong]="remainingRefundCap()===0" [attr.title]="'Monto de reintegro que queda dentro del tope total'">{{ remainingRefundCap() | currency:undefined:'symbol':'1.0-0' }}</span></div>
+                        }
         </div>
-            @if (availableProgress() !== null) {
-                <div class="progress">
-                    <div class="bar" [style.width.%]="availableProgress()"></div>
-                </div>
-            }
-        <ul class="purchase-list">
-            @for (purchase of promotion.activeDate.purchases; track purchase.id) {
-                                <li class="purchase-item">
-                    <div class="purchase-info">
-                        <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
-                        <span class="store">{{ purchase.storeName }}</span>
-                        <span class="amount">{{ purchase.amount | currency }}</span>
-                        <span class="method">/ {{ purchase.paymentMethod }}</span>
-                    </div>
-                                        <div class="actions">
-                                            <button class="icon-btn" type="button" (click)="editPurchase(purchase)" [attr.aria-label]="'Editar compra'" title="Editar compra">
-                                                <span class="material-symbols-rounded icon">edit</span>
-                                            </button>
-                                            <button class="icon-btn danger" type="button" (click)="removePurchase(purchase)" [attr.aria-label]="'Eliminar compra'" title="Eliminar compra">
-                                                <span class="material-symbols-rounded icon">delete</span>
-                                            </button>
-                                        </div>
-                </li>
-            }
-        </ul>
+                        <!-- Per-method chips already rendered above with add buttons -->
+                <ul class="purchase-list minimal">
+                    @for (purchase of promotion.activeDate.purchases; track purchase.id) {
+                        <li class="purchase-item" [class.stacked]="purchase.promoIds?.length > 1">
+                            <div class="purchase-info">
+                                <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
+                                <span class="store">{{ purchase.storeName }}</span>
+                                <span class="amount">{{ purchase.amount | currency }}</span>
+                                <span class="refund" *ngIf="totalRefund(purchase) > 0" [attr.title]="'Reintegro total de esta compra'">-{{ totalRefund(purchase) | currency }}</span>
+                                @if (purchase.promoIds?.length > 1) {
+                                    <span class="stack-badge" title="Compra combinada">Combo</span>
+                                }
+                                <span class="method">/ {{ purchase.paymentMethod }}</span>
+                            </div>
+                            @if (purchase.breakdown?.length > 0) {
+                                <div class="stack-breakdown slim">
+                                    <table>
+                                        <thead><tr><th>Promo</th><th>Desc</th></tr></thead>
+                                        <tbody>
+                                            @for (b of purchase.breakdown; track b.promoId) {
+                                                <tr>
+                                                    <td>{{ findTitle(b.promoId) }}</td>
+                                                    <td>{{ b.discountValue | number:'1.0-0' }}</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            <div class="purchase-actions">
+                                <button class="icon-btn" type="button" (click)="editPurchase(purchase)" [attr.aria-label]="'Editar compra'" title="Editar compra">
+                                    <span class="material-symbols-rounded icon">edit</span>
+                                </button>
+                                <button class="icon-btn danger" type="button" (click)="removePurchase(purchase)" [attr.aria-label]="'Eliminar compra'" title="Eliminar compra">
+                                    <span class="material-symbols-rounded icon">delete</span>
+                                </button>
+                            </div>
+                        </li>
+                    }
+                </ul>
     }
 
     @if (promotion.pastDates.length > 0 && (promotion.pastDates[promotion.pastDates.length -1].purchases?.length ?? 0) > 0) {
@@ -99,18 +129,33 @@
                 }
                 ):
             </p>
-            <ul class="purchase-list">
-                @for (purchase of promotion.pastDates[promotion.pastDates.length -1].purchases; track purchase.id) {
-                    <li class="purchase-item">
-                        <div class="purchase-info">
-                            @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !== (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
-                                <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
-                            }
-                            <span class="store">{{ purchase.storeName }}</span>
-                            <span class="amount">{{ purchase.amount | currency }}</span>
-                            <span class="method">/ {{ purchase.paymentMethod }}</span>
-                        </div>
-                                                <div class="actions">
+                                    <ul class="purchase-list minimal">
+                                        @for (purchase of promotion.pastDates[promotion.pastDates.length -1].purchases; track purchase.id) {
+                                            <li class="purchase-item" [class.stacked]="purchase.promoIds?.length > 1">
+                                                <div class="purchase-info">
+                                                    @if ((promotion.pastDates[promotion.pastDates.length -1].from | date) !== (promotion.pastDates[promotion.pastDates.length -1].to | date)) {
+                                                        <span class="pill">{{ purchase.date | date: 'dd-MM' }}</span>
+                                                    }
+                                                    <span class="store">{{ purchase.storeName }}</span>
+                                                    <span class="amount">{{ purchase.amount | currency }}</span>
+                                                    <span class="method">/ {{ purchase.paymentMethod }}</span>
+                                                </div>
+                                                @if (purchase.breakdown?.length > 0) {
+                                                    <div class="stack-breakdown slim">
+                                                        <table>
+                                                            <thead><tr><th>Promo</th><th>Desc</th></tr></thead>
+                                                            <tbody>
+                                                                @for (b of purchase.breakdown; track b.promoId) {
+                                                                    <tr>
+                                                                        <td>{{ findTitle(b.promoId) }}</td>
+                                                                        <td>{{ b.discountValue | number:'1.0-0' }}</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                }
+                                                <div class="purchase-actions">
                                                     <button class="icon-btn" type="button" (click)="editPurchase(purchase)" [attr.aria-label]="'Editar compra'" title="Editar compra">
                                                         <span class="material-symbols-rounded icon">edit</span>
                                                     </button>
@@ -118,9 +163,9 @@
                                                         <span class="material-symbols-rounded icon">delete</span>
                                                     </button>
                                                 </div>
-                    </li>
-                }
-            </ul>
+                                            </li>
+                                        }
+                                    </ul>
         </div>
     }
 </section>

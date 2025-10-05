@@ -17,10 +17,13 @@ body {
 }
 
 h1, h2, h3, h4 { line-height: 1.2; }
-ul { padding-left: 1rem; }
+ul { padding-left: 1rem; margin-left: 0; }
+
+/* Global sizing + overflow hardening */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width:100%; overflow-x:hidden; }
+body > app-root, app-root > main.main { max-width:100%; width:100%; }
 
 /* Accessibility: large text scale applied globally */
 :root.text-lg { font-size: 18px; }
-@media (max-width: 600px) {
-	:root.text-lg { font-size: 17px; }
-}
+@media (max-width: 600px) { :root.text-lg { font-size: 17px; } }

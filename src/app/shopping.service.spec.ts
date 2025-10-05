@@ -27,10 +27,10 @@ describe('ShoppingService', () => {
       .mockReturnValueOnce('2025-09-01')
       .mockReturnValueOnce('My Store');
 
-    service.addPurchase({ id: 99 }, 'Credit');
+  service.addPurchase({ id: 'promo-99' }, 'Credit');
     const saved = JSON.parse(localStorage.getItem('shopping') || '[]');
     expect(saved.length).toBe(1);
-    expect(saved[0].promoId).toBe(99);
+  expect(saved[0].promoId).toBe('promo-99');
 
     service.removePurchase(saved[0].id);
     const afterRemove = JSON.parse(localStorage.getItem('shopping') || '[]');
@@ -39,17 +39,18 @@ describe('ShoppingService', () => {
 
   it('sorts purchases by date desc in getPurchasesByPromoId', () => {
     // Preload storage to test constructor loading and sorting
+    const promoId = 'test-promo-7';
     const purchases = [
-      { id: 1, promoId: 7, amount: 10, date: '2025-09-01', storeName: 'A', paymentMethod: 'X' },
-      { id: 2, promoId: 7, amount: 20, date: '2025-09-10', storeName: 'B', paymentMethod: 'Y' },
-      { id: 3, promoId: 7, amount: 30, date: '2025-08-31', storeName: 'C', paymentMethod: 'Z' }
+      { id: 1, promoId, amount: 10, date: '2025-09-01', storeName: 'A', paymentMethod: 'X' },
+      { id: 2, promoId, amount: 20, date: '2025-09-10', storeName: 'B', paymentMethod: 'Y' },
+      { id: 3, promoId, amount: 30, date: '2025-08-31', storeName: 'C', paymentMethod: 'Z' }
     ];
     localStorage.setItem('shopping', JSON.stringify(purchases));
 
     // Recreate service to load from storage
     service = new ShoppingService(TestBed.inject(StorageService), TestBed.inject(InteractionService));
-    const result = service.getPurchasesByPromoId(7);
-    // Dates are strings 'YYYY-MM-DD' but service sorts using dd-MM-yyyy parse, so ordering stays as input (no parse match)
-    expect(result.map(r => r.id)).toEqual([1, 2, 3]);
+  const result = service.getPurchasesByPromoId(promoId);
+  // Now sorting by real Date descending (most recent first)
+  expect(result.map(r => r.id)).toEqual([2, 1, 3]);
   });
 });

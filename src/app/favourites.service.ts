@@ -4,8 +4,8 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class FavouritesService {
   private readonly key = 'favourites';
-  private ids: number[] = [];
-  private subject = new BehaviorSubject<number[]>([]);
+  private ids: string[] = [];
+  private subject = new BehaviorSubject<string[]>([]);
   favourites$ = this.subject.asObservable();
 
   constructor() {
@@ -13,7 +13,7 @@ export class FavouritesService {
     this.subject.next([...this.ids]);
   }
 
-  private read(): number[] {
+  private read(): string[] {
     try {
       const raw = localStorage.getItem(this.key);
       return raw ? JSON.parse(raw) : [];
@@ -22,15 +22,15 @@ export class FavouritesService {
     }
   }
 
-  private write(ids: number[]): void {
+  private write(ids: string[]): void {
     localStorage.setItem(this.key, JSON.stringify(ids));
   }
 
-  list(): number[] { return [...this.ids]; }
+  list(): string[] { return [...this.ids]; }
 
-  has(id: number): boolean { return this.ids.includes(id); }
+  has(id: string): boolean { return this.ids.includes(id); }
 
-  toggle(id: number): boolean {
+  toggle(id: string): boolean {
     const i = this.ids.indexOf(id);
     if (i >= 0) { this.ids.splice(i, 1); }
     else { this.ids.push(id); }

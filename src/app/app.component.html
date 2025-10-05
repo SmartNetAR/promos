@@ -1,15 +1,36 @@
 <main class="main">
   <div class="topbar" role="toolbar" aria-label="Preferencias">
-    <div class="left"></div>
-    <div class="right">
-      <div class="tb-dropdown" [class.open]="showFilterMenu">
-        <button type="button" class="tb-btn" (click)="toggleFilterMenu($event)" [attr.aria-expanded]="showFilterMenu" aria-haspopup="menu" [attr.aria-label]="'Filtro: ' + prefs.state$.value.filter" [title]="'Filtro: ' + prefs.state$.value.filter">
+    <div class="topbar-row">
+      <div class="left">
+        <button type="button" class="tb-btn tb-toggle" (click)="toggleToolbar()" [attr.aria-expanded]="toolbarExpanded" aria-controls="toolbar-opts" [title]="toolbarExpanded ? 'Contraer barra' : 'Expandir opciones'">
+          <span class="material-symbols-rounded">{{ toolbarExpanded ? 'unfold_less' : 'unfold_more' }}</span>
+          <span class="tb-label">Opciones</span>
+          <span class="tb-badge" *ngIf="filterIsNotAll()">Filtro</span>
+        </button>
+        <div class="tb-inline-indicator" *ngIf="!toolbarExpanded && filterIsNotAll()">
+          <span class="material-symbols-rounded tiny">filter_alt</span>
+          <span class="flt-label">{{ prefs.state$.value.filter === 'active' ? 'Activas hoy' : (prefs.state$.value.filter === 'active-future' ? 'Activas+Futuras' : '') }}</span>
+        </div>
+      </div>
+      <div class="stack-toolbar">
+      <button type="button" class="tb-btn" (click)="openStackFlyout()" [disabled]="selectedCount()<2" aria-label="Combinar promociones seleccionadas" title="Combinar promociones seleccionadas">
+        <span class="material-symbols-rounded">layers</span>
+        <span class="tb-label">Combinar ({{ selectedCount() }})</span>
+      </button>
+      <button type="button" class="tb-btn" (click)="clearSelection()" [disabled]="selectedCount()==0" aria-label="Limpiar selección" title="Limpiar selección">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      </div>
+    </div>
+  <div class="topbar-extra" #extraPanelRef id="toolbar-opts" [class.open]="toolbarExpanded" [style.max-height.px]="extraPanelHeight" [attr.aria-hidden]="!toolbarExpanded">
+      <div class="tb-dropdown" [class.open]="showFilterMenu" (click)="$event.stopPropagation()">
+        <button type="button" class="tb-btn" (click)="toggleFilterMenu($event)" [attr.aria-expanded]="showFilterMenu" aria-haspopup="menu" aria-controls="filterMenuList" [attr.aria-label]="'Filtro: ' + prefs.state$.value.filter" [title]="'Filtro: ' + prefs.state$.value.filter">
           <span class="material-symbols-rounded">filter_alt</span>
           <span class="tb-label">{{ prefs.state$.value.filter === 'active' ? 'Solo activas hoy' : (prefs.state$.value.filter === 'active-future' ? 'Activas y futuras' : 'Todas') }}</span>
           <span class="tb-badge">{{ prefs.state$.value.filter === 'active' ? countActive : (prefs.state$.value.filter === 'active-future' ? countActiveFuture : countAll) }}</span>
           <span class="material-symbols-rounded caret">expand_more</span>
         </button>
-        <ul class="tb-menu" role="menu" #filterMenu (keydown)="onFilterMenuKeydown($event)">
+  <ul class="tb-menu" id="filterMenuList" role="menu" #filterMenu (keydown)="onFilterMenuKeydown($event)">
           <li role="none">
             <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='active'" [class.active]="prefs.state$.value.filter==='active'" (click)="prefs.setFilter('active'); showFilterMenu=false">
               <span class="material-symbols-rounded check">check</span>
@@ -24,26 +45,27 @@
               <span class="menu-badge">{{ countActiveFuture }}</span>
             </button>
           </li>
-          <li role="none">
-            <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='all'" [class.active]="prefs.state$.value.filter==='all'" (click)="prefs.setFilter('all'); showFilterMenu=false">
-              <span class="material-symbols-rounded check">check</span>
-              <span>Todas</span>
-              <span class="menu-badge">{{ countAll }}</span>
-            </button>
-          </li>
+            <li role="none">
+              <button type="button" role="menuitemradio" [attr.aria-checked]="prefs.state$.value.filter==='all'" [class.active]="prefs.state$.value.filter==='all'" (click)="prefs.setFilter('all'); showFilterMenu=false">
+                <span class="material-symbols-rounded check">check</span>
+                <span>Todas</span>
+                <span class="menu-badge">{{ countAll }}</span>
+              </button>
+            </li>
         </ul>
       </div>
-      <button type="button" class="tb-btn" (click)="prefs.toggleTextScale()" [attr.aria-label]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'" [title]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'">
+      <button type="button" class="tb-btn tb-size" (click)="prefs.toggleTextScale()" [attr.aria-label]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'" [title]="prefs.state$.value.text === 'large' ? 'Tamaño normal' : 'Texto grande'">
         <span class="material-symbols-rounded">{{ prefs.state$.value.text === 'large' ? 'text_fields' : 'format_size' }}</span>
         <span class="tb-label">{{ prefs.state$.value.text === 'large' ? 'Normal' : 'Grande' }}</span>
       </button>
     </div>
+    <div class="sr-only" aria-live="polite">{{ toolbarExpanded ? 'Opciones expandidas' : 'Opciones contraídas' }}</div>
   </div>
   <div class="content">
     <div class="left-side">
       @if (favouritePromotions.length > 0) {
   @for (promotion of favouritePromotions; track promotion.id) {
-  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)"></app-promotion>
+  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)" (purchaseRemoved)="onPurchasesChanged()"></app-promotion>
       }
       }
       @if (favouritePromotions.length > 0 && otherPromotions.length > 0) {
@@ -53,7 +75,7 @@
       }
       @if (otherPromotions.length > 0) {
   @for (promotion of otherPromotions; track promotion.id) {
-  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)"></app-promotion>
+  <app-promotion [promotion]="promotion" (addPurchaseRequest)="openPurchaseForm($event.promo, $event.paymentMethod)" (editPurchaseRequest)="openEditPurchase($event.promo, $event.purchase)" (purchaseRemoved)="onPurchasesChanged()"></app-promotion>
       }
       }
     </div>
@@ -62,4 +84,8 @@
 
 <router-outlet></router-outlet>
 <app-toast-container></app-toast-container>
-<app-purchase-flyout (submitted)="handlePurchaseSubmit($event)" (updated)="handlePurchaseUpdate($event)"></app-purchase-flyout>
+<app-stacked-purchase-flyout
+  [open]="stackFlyoutOpen"
+  [promotions]="selectedPromotions"
+  (close)="stackFlyoutOpen=false"
+  (submitStacked)="handleStackedPurchase($event)"></app-stacked-purchase-flyout>
