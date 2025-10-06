@@ -24,7 +24,7 @@
         "id": "b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123",
         "title": "YPF, Shell y Axion",
         "payment_methods": [
-            "Modo / Buep / Crédito"
+            "Modo / Buepp / Crédito"
         ],
         "discount": 10,
         "limit": {
@@ -88,7 +88,7 @@
     },
     {
         "id": "e5f6a7b8-c9d0-4123-a456-7e8f9a0b1c2d",
-        "title": "Dia",
+        "title": "Día",
         "payment_methods": [
             "Modo / Santander / Crédito y Débito"
         ],
@@ -109,12 +109,12 @@
     },
     {
         "id": "f6a7b8c9-d0e1-4234-b567-8f9a0b1c2d3e",
-        "title": "Dia Modo Bancos",
+        "title": "Día Modo Bancos",
         "payment_methods": [
             "Modo / Galicia / Crédito y Débito",
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
-            "Modo / Buep / Crédito y Débito"
+            "Modo / Buepp / Crédito y Débito"
         ],
         "discount": 25,
         "minAmount": 20000,
@@ -260,7 +260,7 @@
             "Modo / Galicia / Crédito y Débito",
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
-            "Modo / Buep / Crédito y Débito",
+            "Modo / Buepp / Crédito y Débito",
             "Modo / Santander / Crédito y Débito"
         ],
         "discount": 25,
@@ -290,7 +290,7 @@
         "payment_methods": [
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
-            "Modo / Buep / Crédito y Débito",
+            "Modo / Buepp / Crédito y Débito",
             "Modo / BBVA / Crédito y Débito"
         ],
         "discount": 25,
@@ -454,7 +454,7 @@
             "NFC / Modo / Galicia / tarjetas Mastercard",
             "NFC / Modo / Supervielle / tarjetas Mastercard",
             "NFC / Modo / Macro / tarjetas Mastercard",
-            "NFC / Modo / Buep / tarjetas Mastercard",
+            "NFC / Modo / Buepp / tarjetas Mastercard",
             "NFC / Modo / Santander / tarjetas Mastercard"
         ],
         "discount": 25,
@@ -478,7 +478,7 @@
     },
     {
         "id": "b6c5af4b-2b15-452e-b128-aca7cf7bc5a1",
-        "title": "Dia Personal Pay",
+        "title": "Día Personal Pay",
         "payment_methods": [
             "NFC / Personal Pay"
         ],
@@ -503,7 +503,7 @@
     },
     {
         "id": "e4f29c1c-71ee-49a2-89b7-5bd88adb0b23",
-        "title": "Fredo 1/4 o 1 KG. Personal Pay",
+        "title": "Freddo 1/4 o 1 KG. Personal Pay",
         "payment_methods": [
             "QR / Personal Pay"
         ],
