@@ -162,7 +162,7 @@
         "id": "b8c9d0e1-f2a3-4456-d789-a0b1c2d3e4f5",
         "title": "Vital con Ciudad y Buepp",
         "payment_methods": [
-            "Modo / Ciudad / Crédito y Débito"
+            "Modo / Ciudad / Crédito"
         ],
         "discount": 20,
         "limit": {
@@ -530,6 +530,38 @@
         "stacking": {
             "stackable": false,
             "type": "base"
+        }
+    },
+    {
+        "id": "2a048f44-1cd6-434d-a101-f0570dfcf42f",
+        "title": "McDonald's con NFC Modo Mastercard",
+        "payment_methods": [
+            "NFC / Modo / BNA+ / tarjetas Mastercard",
+            "NFC / Modo / Galicia / tarjetas Mastercard",
+            "NFC / Modo / Supervielle / tarjetas Mastercard",
+            "NFC / Modo / Macro / tarjetas Mastercard",
+            "NFC / Modo / Ciudad / tarjetas Mastercard",
+            "NFC / Modo / Santander / tarjetas Mastercard"
+        ],
+        "discount": 30,
+        "limit": {
+            "amount": 10000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-03-01",
+            "to": "2025-10-31",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
         }
     }
 ]
