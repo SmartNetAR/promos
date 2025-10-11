@@ -1,24 +1,7 @@
-// Mock promotions data so tests don't depend on real promotions.json contents
-jest.mock('./data/promotions.json', () => [
-    {
-      id: 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123',
-      title: 'Shell',
-      payment_methods: ['Modo / BNA+ / Crédito y Débito'],
-      discount: 25,
-      limit: { amount: 20000, times: 'each', mode: 'user', period: 'month' },
-      validity: { from: '2024-08-09', to: '2025-09-30', days_of_week: [0,1,2,3,4,5,6] }
-    },
-    {
-      id: 'c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
-      title: 'Carnicerías DNI',
-      payment_methods: ['Cta DNI / Crédito y Débito'],
-      discount: 35,
-      limit: { amount: 6000, times: 'each', mode: 'user', period: 'day' },
-      validity: { from: '2025-09-01', to: '2025-09-30', specific_dates: ['2025-09-06','2025-09-20'] }
-    }
-]);
+import { of } from 'rxjs';
 
 import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { PromotionsService } from './promotions.service';
 import { ShoppingService } from './shopping.service';
 import { ClockService } from './clock.service';
@@ -41,6 +24,11 @@ class FakeClockService {
   today() { return this._today; }
 }
 
+class FakeHttpClient {
+  constructor(private readonly payload: any[]) {}
+  get(url: string) { return of(this.payload); }
+}
+
 describe('PromotionsService', () => {
   let service: PromotionsService;
   let fakeShopping: FakeShoppingService;
@@ -51,7 +39,25 @@ describe('PromotionsService', () => {
       providers: [
         PromotionsService,
         { provide: ShoppingService, useClass: FakeShoppingService },
-        { provide: ClockService, useClass: FakeClockService }
+        { provide: ClockService, useClass: FakeClockService },
+        { provide: HttpClient, useFactory: () => new FakeHttpClient([
+          {
+            id: 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123',
+            title: 'Shell',
+            payment_methods: ['Modo / BNA+ / Crédito y Débito'],
+            discount: 25,
+            limit: { amount: 20000, times: 'each', mode: 'user', period: 'month' },
+            validity: { from: '2024-08-09', to: '2025-09-30', days_of_week: [0,1,2,3,4,5,6] }
+          },
+          {
+            id: 'c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
+            title: 'Carnicerías DNI',
+            payment_methods: ['Cta DNI / Crédito y Débito'],
+            discount: 35,
+            limit: { amount: 6000, times: 'each', mode: 'user', period: 'day' },
+            validity: { from: '2025-09-01', to: '2025-09-30', specific_dates: ['2025-09-06','2025-09-20'] }
+          }
+        ]) }
       ]
     });
     service = TestBed.inject(PromotionsService);
@@ -78,7 +84,8 @@ describe('PromotionsService', () => {
     });
 
     it('should include all promos and compute calculated fields', () => {
-      const promos = service.getPromotions();
+  let promos: any[] = [];
+  service.getPromotions$().subscribe(p => promos = p);
 
       // There should be at least the known ids from the JSON
   const shell = promos.find((p: any) => p.id === 'b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123');
@@ -97,7 +104,7 @@ describe('PromotionsService', () => {
       expect(shellPromo.activeDate.totalAmountRefunded).toBe(1500);
       expect(shellPromo.activeDate.availableAmountToPurchase).toBe(80000 - 6000);
 
-      // DNI specific dates: on Sep 15, no active date, 1 past (Sep 6) and 1 future (Sep 20)
+  // DNI specific dates: on Sep 15, no active date, 1 past (Sep 6) and 1 future (Sep 20)
       const dniPromo = dni!;
       expect(dniPromo.activeDate).toBeNull();
       const dniPast = dniPromo.pastDates;

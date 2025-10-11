@@ -13,16 +13,8 @@
 .promo-title { margin: 0; font-size: 1.1rem; }
 
 .promo-status { display: flex; gap: 8px; }
-.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: .85rem; }
-.badge-success { background: #ecfdf5; color: #065f46; }
-.badge-info { background: #eef2ff; color: #3730a3; }
-.badge-muted { background: #f3f4f6; color: #374151; }
-.badge-calendar { background:#fef3c7; color:#92400e; font-weight:600; }
-.badge-calendar .month-label { margin-right:4px; font-weight:700; }
 
 .icon { width: 18px; height: 18px; display: inline-block; font-size: 18px; line-height: 1; }
-.icon-btn.star { color: #9ca3af; }
-.icon-btn.star.active { color: #f59e0b; }
 .chevron { transition: transform .2s ease; }
 .chevron.rotate { transform: rotate(180deg); }
 
@@ -34,26 +26,12 @@
 
 /* Weekday pills */
 .days .week-days { display: inline-flex; gap:4px; }
-.day-pill { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:4px; font-size:.65rem; font-weight:600; background:#f1f5f9; color:#94a3b8; }
-.day-pill.active { background:#3b82f6; color:#fff; }
-.day-pill:not(.active) { opacity:.55; }
-.day-pill.all-days { background:#10b981; color:#fff; padding:2px 8px; width:auto; }
-.calendar-pill { background:#fef3c7; color:#92400e; width:auto; padding:0 4px; display:inline-flex; gap:4px; align-items:center; }
-.day-pill.specific { background:#fcd34d; color:#92400e; opacity:1; }
-.calendar-pill .cal-icon { font-size:14px; width:14px; height:14px; line-height:14px; }
-.calendar-pill .dates-inline { font-size:.55rem; font-weight:600; letter-spacing:.5px; }
 
 .payments h4 { margin: 8px 0; font-size: 1rem; }
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
 .chip { display: inline-flex; align-items: center; gap: 8px; background: #f3f4f6; border-radius: 999px; padding: 4px 8px; }
 .chip-label { font-size: .9rem; }
 
-.icon-btn { border: none; background: transparent; padding: 4px; border-radius: 6px; cursor: pointer; color: #111827; }
-.icon-btn:hover { background: #e5e7eb; }
-.icon-btn.primary { color: #2563eb; }
-.icon-btn.primary:hover { background: #dbeafe; }
-.icon-btn.danger { color: #b91c1c; }
-.icon-btn.danger:hover { background: #fee2e2; }
 
 .totals { display: grid; grid-template-columns: repeat(3, auto); gap: 8px 16px; margin: 12px 0; }
 
@@ -75,15 +53,11 @@
 .stack-breakdown.slim td { padding: 2px 4px; }
 .stack-breakdown.slim tbody tr:nth-child(even) { background: #f8fafc; }
 .stack-breakdown.slim table th:last-child, .stack-breakdown.slim table td:last-child { text-align: right; }
-.pill { background: #e0f2fe; color: #075985; border-radius: 999px; padding: 2px 8px; font-size: .8rem; }
 .store { color: #111827; }
 .amount { font-weight: 600; }
-.refund { background:#dcfce7; color:#166534; border-radius:999px; padding:2px 6px; font-size:.7rem; font-weight:600; align-self:center; }
 .method { color: #6b7280; }
 
 .past-toggle { margin-top: 8px; }
-.text-btn { background: transparent; border: none; color: #2563eb; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-.text-btn:hover { text-decoration: underline; }
 
 .past { margin-top: 8px; }
 .past-title { color: #374151; margin: 8px 0; }

@@ -1,17 +1,17 @@
-import { Component, OnDestroy, ViewChild, ElementRef, HostListener, inject, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { PromotionsService } from './promotions.service';
-import { PromotionComponent } from './promotion/promotion.component';
-import { ToastContainerComponent } from './toast/toast-container.component';
-import { StackedPurchaseFlyoutComponent } from './stacking/stacked-purchase-flyout.component';
-import { ShoppingService } from './shopping.service';
-import { ToastService } from './toast.service';
-import { FavouritesService } from './favourites.service';
 import { Subject, takeUntil } from 'rxjs';
-import { PreferencesService, FilterMode } from './preferences.service';
+import { FavouritesService } from './favourites.service';
+import { FilterMode, PreferencesService } from './preferences.service';
+import { PromotionComponent } from './promotion/promotion.component';
 import { PromotionsRegistryService } from './promotions-registry.service';
+import { PromotionsService } from './promotions.service';
 import { SelectionService } from './selection.service';
+import { ShoppingService } from './shopping.service';
+import { StackedPurchaseFlyoutComponent } from './stacking/stacked-purchase-flyout.component';
+import { ToastService } from './toast.service';
+import { ToastContainerComponent } from './toast/toast-container.component';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +22,7 @@ import { SelectionService } from './selection.service';
 })
 export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   title = 'promos';
-  promotions = this.promotionsService.getPromotions() || [];
+  promotions: any[] = [];
   favouritePromotions = [] as any[];
   otherPromotions = [] as any[];
   showFilterMenu = false;
@@ -59,7 +59,14 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe(() => this.recomputeLists());
 
-  this.recomputeLists();
+  // Subscribe to dynamic promotions stream
+  this.promotionsService.getPromotions$()
+    .pipe(takeUntil(this.destroyed$))
+    .subscribe(list => {
+      this.promotions = list;
+      this.recomputeLists();
+    });
+  // Recompute lists also when favourites or prefs change (already below) after promotions are loaded
   this.selection.selection$.pipe(takeUntil(this.destroyed$)).subscribe(() => this.refreshSelectedPromotions());
   }
 
@@ -81,7 +88,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   recomputeLists() {
-  const all = this.promotionsService.getPromotions() || [];
+  const all = this.promotions || [];
   this.registry.register(all);
   const mode = this.prefs.state$.value.filter;
   // counts
@@ -173,8 +180,10 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       candidate.push(promo);
     }
 
-    // Si la promo NO es stackeable y había selección previa, forzar reemplazo
-    const needsReplaceBecauseNonStackable = !promo.isStackable && this.selectedPromotions.length > 0;
+  // Determinar stackeabilidad con tolerancia a objetos simples (tests) que no exponen getter isStackable
+  const isStackable = (promo as any).isStackable !== undefined ? (promo as any).isStackable : !!promo?.stacking?.stackable;
+  // Si la promo NO es stackeable y había selección previa, forzar reemplazo
+  const needsReplaceBecauseNonStackable = !isStackable && this.selectedPromotions.length > 0;
     // Validar compatibilidad completa
     const valid = !needsReplaceBecauseNonStackable && validateStack(candidate);
     if (!valid) {
