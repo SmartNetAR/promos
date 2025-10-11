@@ -109,6 +109,142 @@ export class PromotionComponent {
     return !!(this.promotion?.limit && this.promotion.limit.amount === 0);
   }
 
+  // Weekday letters (Mon-Sun) using Spanish abbreviations: L M X J V S D
+  private static readonly WEEK_LETTERS = ['D','L','M','X','J','V','S']; // will reorder for display Mon->Sun
+  weekdaysDisplay(): { letter: string; active: boolean; fullName: string; specific?: boolean }[] {
+    if (!this.promotion?.validity) return [];
+    const activeSet = new Set<number>();
+    if (Array.isArray(this.promotion.validity.days_of_week)) {
+      this.promotion.validity.days_of_week.forEach((d: number) => activeSet.add(d));
+    }
+    // If no explicit days_of_week, infer from specific dates subset.
+    // Rules:
+    // 1. If all specific dates fall on same weekday AND they DO NOT cover every occurrence of that weekday in that month subset -> mark as specific (amber).
+    // 2. If they cover every occurrence of that weekday within the month (i.e., all Tuesdays of that month) -> treat as active (blue) instead of specific.
+    let specificWeekday: number | null = null;
+    if (!activeSet.size) {
+      const specs = this.specificDates();
+      if (specs.length) {
+        const parsed = specs.map(d => {
+          const y = Number(d.slice(0,4));
+          const m = Number(d.slice(5,7)) - 1;
+          const day = Number(d.slice(8,10));
+          const dt = new Date(y, m, day);
+          return { dt, weekday: dt.getDay(), y, m };
+        });
+        const weekdays = parsed.map(p => p.weekday);
+        const allSame = weekdays.every(w => w === weekdays[0]);
+        if (allSame) {
+          const targetWeekday = weekdays[0];
+          // Determine number of occurrences of that weekday in the month (y,m) of the subset (they're all same month due to earlier filtering logic).
+          const y = parsed[0].y; const m = parsed[0].m;
+          const occurrences: Date[] = [];
+          // Iterate days of month
+          const firstOfMonth = new Date(y, m, 1);
+            for (let d = 1; d <= 31; d++) {
+              const cand = new Date(y, m, d);
+              if (cand.getMonth() !== m) break; // overflow
+              if (cand.getDay() === targetWeekday) occurrences.push(cand);
+            }
+          const coveredAll = occurrences.length === parsed.length && parsed.every(p => occurrences.some(o => o.getDate() === p.dt.getDate()));
+          if (coveredAll) {
+            activeSet.add(targetWeekday); // promote to active (blue)
+          } else {
+            specificWeekday = targetWeekday; // partial coverage -> amber highlight
+          }
+        }
+      }
+    }
+    // Display Monday first: ordering indices 1..6 then 0
+    const order = [1,2,3,4,5,6,0];
+    const full = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    return order.map(idx => ({
+      letter: PromotionComponent.WEEK_LETTERS[idx],
+      active: activeSet.has(idx),
+      fullName: full[idx],
+      specific: specificWeekday === idx
+    }));
+  }
+
+  isAllWeek(): boolean {
+    const days = this.promotion?.validity?.days_of_week;
+    if (!Array.isArray(days)) return false;
+    if (days.length !== 7) return false;
+    return [0,1,2,3,4,5,6].every(d => days.includes(d));
+  }
+
+  activeDaysAriaLabel(): string {
+    if (this.isAllWeek()) return 'Aplica todos los días';
+    const activeLetters = this.weekdaysDisplay().filter(d => d.active).map(d => d.letter);
+    if (!activeLetters.length) return 'Sin días activos';
+    return 'Aplica: ' + activeLetters.join(', ');
+  }
+
+  specificDates(): string[] {
+    const spec = this.promotion?.validity?.specific_dates;
+    if (!Array.isArray(spec)) return [];
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    // Build structures with parsed dates
+    const futureOrToday = spec.map(d => {
+      const y = Number(d.slice(0,4));
+      const m = Number(d.slice(5,7)) - 1;
+      const dayNum = Number(d.slice(8,10));
+      const dt = new Date(y, m, dayNum, 0, 0, 0, 0);
+      return { raw: d, date: dt, y, m };
+    }).filter(x => x.date >= todayStart);
+    if (!futureOrToday.length) return [];
+    const currentMonthMatches = futureOrToday.filter(x => x.y === today.getFullYear() && x.m === today.getMonth());
+    let subset: typeof futureOrToday;
+    if (currentMonthMatches.length) {
+      subset = currentMonthMatches;
+    } else {
+      // pick earliest future month (year, month) lexicographically
+      futureOrToday.sort((a,b) => (a.y - b.y) || (a.m - b.m) || (a.date.getTime() - b.date.getTime()));
+      const first = futureOrToday[0];
+      subset = futureOrToday.filter(x => x.y === first.y && x.m === first.m);
+    }
+    // Preserve original ordering within selected subset as they appeared in spec
+    const rawSet = new Set(subset.map(s => s.raw));
+    return spec.filter(d => rawSet.has(d));
+  }
+
+  specificDatesFormatted(): string {
+    const dates = this.specificDates();
+    if (!dates.length) return '';
+    // Keep original order; show dd-MM abreviado
+    return dates.map(d => d.slice(8,10)+'-'+d.slice(5,7)).join(', ');
+  }
+
+  specificDatesDayNumbers(): string {
+    const dates = this.specificDates();
+    if (!dates.length) return '';
+    return dates.map(d => d.slice(8,10)).join(' / ');
+  }
+
+  private specificDatesYearMonth(): { y: number; m: number } | null {
+    const dates = this.specificDates();
+    if (!dates.length) return null;
+    const first = dates[0];
+    return { y: Number(first.slice(0,4)), m: Number(first.slice(5,7)) - 1 };
+  }
+
+  isFutureMonthSpecificDates(): boolean {
+    const ym = this.specificDatesYearMonth();
+    if (!ym) return false;
+    const now = new Date();
+    return ym.y > now.getFullYear() || (ym.y === now.getFullYear() && ym.m > now.getMonth());
+  }
+
+  specificDatesMonthLabel(): string {
+    const ym = this.specificDatesYearMonth();
+    if (!ym) return '';
+    const now = new Date();
+    if (ym.y === now.getFullYear() && ym.m === now.getMonth()) return '';
+    const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    return months[ym.m];
+  }
+
   // For stackable extras, show per-method progress derived from their own purchases; if they have none but a base exists selected, reuse base fractions.
   derivedPerMethodForExtra(): any[] | null {
     if (!this.promotion?.isStackable || this.promotion?.stacking?.type !== 'extra') return null;

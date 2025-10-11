@@ -26,6 +26,14 @@
                     Última vez: {{ promotion.pastDates[promotion.pastDates.length - 1].to | date:'EEE dd MMM' }}
                 </span>
             }
+                        <span *ngIf="specificDates().length" class="badge badge-calendar" [attr.title]="(isFutureMonthSpecificDates() ? (specificDatesMonthLabel() + ': ') : 'Fechas específicas: ') + specificDatesFormatted()" [attr.aria-label]="(isFutureMonthSpecificDates() ? (specificDatesMonthLabel() + ': ') : 'Fechas específicas: ') + specificDatesFormatted()">
+                                <span class="material-symbols-rounded icon" style="font-size:16px;">event</span>
+                                <ng-container *ngIf="isFutureMonthSpecificDates(); else onlyDays">
+                                    <span class="month-label">{{ specificDatesMonthLabel() }}</span>
+                                    {{ specificDatesDayNumbers() }}
+                                </ng-container>
+                                <ng-template #onlyDays>{{ specificDatesDayNumbers() }}</ng-template>
+                        </span>
         </div>
     </header>
 
@@ -34,6 +42,17 @@
     <div class="meta-item"><span class="meta-label">Tope</span><span class="meta-value">{{ promotion.limit.amount === 0 ? 'Sin tope' : (promotion.limit.amount | currency:undefined:'symbol':'1.0-0') }}</span></div>
     <div class="meta-item"><span class="meta-label">Importe</span><span class="meta-value">{{ promotion.calculatedPurchaseAmount | currency:undefined:'symbol':'1.0-0' }}</span></div>
     <div class="meta-item" *ngIf="promotion.minAmount"><span class="meta-label">Mínimo</span><span class="meta-value" [attr.title]="'Monto mínimo de compra para aplicar los descuentos'">{{ promotion.minAmount | currency:undefined:'symbol':'1.0-0' }}</span></div>
+            <div class="meta-item days" *ngIf="promotion.validity?.days_of_week?.length || (specificDates().length && !isAllWeek())" [attr.aria-label]="activeDaysAriaLabel()">
+                <span class="meta-label">Días</span>
+                <span class="meta-value week-days">
+                    <ng-container *ngIf="isAllWeek(); else partialDays">
+                        <span class="day-pill all-days" title="Aplica todos los días">Todos los días</span>
+                    </ng-container>
+                    <ng-template #partialDays>
+                                    <span class="day-pill" *ngFor="let d of weekdaysDisplay()" [class.active]="d.active" [class.specific]="!d.active && d.specific" [attr.title]="d.active ? ('Aplica los ' + d.fullName) : (d.specific ? ('Aplica en fechas puntuales ('+specificDatesFormatted()+') que caen ' + d.fullName) : ('No aplica ' + d.fullName))">{{ d.letter }}</span>
+                    </ng-template>
+                </span>
+            </div>
     </div>
 
         @if (promotion.payment_methods.length > 0 && promotion.stacking?.type !== 'extra') {

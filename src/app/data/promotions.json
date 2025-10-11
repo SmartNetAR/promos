@@ -22,7 +22,7 @@
     },
     {
         "id": "b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123",
-        "title": "YPF, Shell y Axion",
+        "title": "YPF, Shell y Axion con Modo / Buepp Ciudad Crédito",
         "payment_methods": [
             "Modo / Buepp / Crédito"
         ],
@@ -43,7 +43,7 @@
     },
     {
         "id": "c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f",
-        "title": "Carnicerías DNI",
+        "title": "Carnicerías con cuenta DNI",
         "payment_methods": [
             "Cta DNI / Crédito y Débito"
         ],
@@ -59,7 +59,8 @@
             "to": "2025-09-30",
             "specific_dates": [
                 "2025-09-06",
-                "2025-09-20"
+                "2025-09-20",
+                "2025-10-11"
             ]
         }
     },
@@ -88,7 +89,7 @@
     },
     {
         "id": "e5f6a7b8-c9d0-4123-a456-7e8f9a0b1c2d",
-        "title": "Día",
+        "title": "Día con Santander",
         "payment_methods": [
             "Modo / Santander / Crédito y Débito"
         ],
@@ -162,7 +163,7 @@
         "id": "b8c9d0e1-f2a3-4456-d789-a0b1c2d3e4f5",
         "title": "Vital con Ciudad y Buepp",
         "payment_methods": [
-            "Modo / Ciudad / Crédito"
+            "Modo / Ciudad / Crédito y Débito"
         ],
         "discount": 20,
         "limit": {
@@ -260,7 +261,7 @@
             "Modo / Galicia / Crédito y Débito",
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
-            "Modo / Buepp / Crédito y Débito",
+            "Modo / Buep / Crédito y Débito",
             "Modo / Santander / Crédito y Débito"
         ],
         "discount": 25,
@@ -290,7 +291,7 @@
         "payment_methods": [
             "Modo / Supervielle / Crédito y Débito",
             "Modo / Macro / Crédito y Débito",
-            "Modo / Buepp / Crédito y Débito",
+            "Modo / Buep / Crédito y Débito",
             "Modo / BBVA / Crédito y Débito"
         ],
         "discount": 25,
@@ -405,7 +406,7 @@
     },
     {
         "id": "32bfb453-0598-4fe2-8d82-c134ce89fb41",
-        "title": "Gastronomía con crédito Ualá",
+        "title": "Gastronomía con NFC Ualá",
         "payment_methods": [
             "NFC / Ualá / Débito y Crédito"
         ],
@@ -420,8 +421,8 @@
             "from": "2025-09-01",
             "to": "2025-10-31",
             "days_of_week": [
-                5,
-                6
+                6,
+                0
             ]
         }
     },
@@ -530,6 +531,27 @@
         "stacking": {
             "stackable": false,
             "type": "base"
+        }
+    },
+    {
+        "id": "b7f2c3d4-8a9e-4f1b-9023-5c7d8e9f0123",
+        "title": "YPF, Shell, Puma, Gulf Voy y Axion con Modo / BNA+ Crédito",
+        "payment_methods": [
+            "Modo / BNA+ / Crédito"
+        ],
+        "discount": 30,
+        "limit": {
+            "amount": 15000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-01-01",
+            "to": "2025-12-31",
+            "days_of_week": [
+                5, 6, 0
+            ]
         }
     },
     {

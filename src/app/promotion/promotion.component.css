@@ -17,6 +17,8 @@
 .badge-success { background: #ecfdf5; color: #065f46; }
 .badge-info { background: #eef2ff; color: #3730a3; }
 .badge-muted { background: #f3f4f6; color: #374151; }
+.badge-calendar { background:#fef3c7; color:#92400e; font-weight:600; }
+.badge-calendar .month-label { margin-right:4px; font-weight:700; }
 
 .icon { width: 18px; height: 18px; display: inline-block; font-size: 18px; line-height: 1; }
 .icon-btn.star { color: #9ca3af; }
@@ -29,6 +31,17 @@
 .meta-label { color: #6b7280; font-size: .85rem; }
 .meta-value { font-weight: 500; }
 .meta-value.strong { font-weight: 700; }
+
+/* Weekday pills */
+.days .week-days { display: inline-flex; gap:4px; }
+.day-pill { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:4px; font-size:.65rem; font-weight:600; background:#f1f5f9; color:#94a3b8; }
+.day-pill.active { background:#3b82f6; color:#fff; }
+.day-pill:not(.active) { opacity:.55; }
+.day-pill.all-days { background:#10b981; color:#fff; padding:2px 8px; width:auto; }
+.calendar-pill { background:#fef3c7; color:#92400e; width:auto; padding:0 4px; display:inline-flex; gap:4px; align-items:center; }
+.day-pill.specific { background:#fcd34d; color:#92400e; opacity:1; }
+.calendar-pill .cal-icon { font-size:14px; width:14px; height:14px; line-height:14px; }
+.calendar-pill .dates-inline { font-size:.55rem; font-weight:600; letter-spacing:.5px; }
 
 .payments h4 { margin: 8px 0; font-size: 1rem; }
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
