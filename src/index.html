@@ -6,9 +6,17 @@
   <script>
     (function(){
       var w = window;
-      var hash = w.__buildHash || '%BUILD_HASH%';
-      w.__buildHash = hash;
-      w.__APP_BUILD_TS = Date.now();
+      var placeholder = '%BUILD_HASH%';
+      var existing = w.__buildHash || placeholder;
+      // If CI didn't replace the placeholder (still contains %), fall back to short timestamp
+      if (typeof existing === 'string' && existing.indexOf('%') !== -1) {
+        var ts = Date.now();
+        // Use base36 to get a compact pseudo-hash (good enough for cache busting)
+        existing = ts.toString(36);
+      }
+      w.__buildHash = existing;
+      // Also expose a numeric build timestamp (first definition wins to keep determinism within one page load)
+      if (!w.__APP_BUILD_TS) w.__APP_BUILD_TS = Date.now();
     })();
   </script>
   <base href="/">

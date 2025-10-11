@@ -33,9 +33,19 @@ export class PromotionsService {
   }
 
   private buildStream(): Observable<any[]> {
-    // Cache-buster using build timestamp or commit hash if injected later
-    const version = (window as any).__buildHash || (window as any).__APP_BUILD_TS || Date.now();
-    return this.http.get<any[]>(`data/promotions.json?v=${version}`)
+    // Cache-buster using build hash (preferred) else build timestamp; ignore unreplaced placeholders
+    const w: any = window as any;
+    let v: any = w.__buildHash;
+    if (!v || (typeof v === 'string' && v.indexOf('%') !== -1)) {
+      v = w.__APP_BUILD_TS || Date.now();
+    }
+    // Optional: expose chosen version for diagnostics (only first time)
+    if (!w.__promosVersionLogged) {
+      // eslint-disable-next-line no-console
+      console.debug('[Promotions] version param =', v);
+      w.__promosVersionLogged = true;
+    }
+    return this.http.get<any[]>(`data/promotions.json?v=${v}`)
       .pipe(
         map(raw => raw.map(promo => {
           const purchases = this.shoppingService.getPurchasesByPromoId(String(promo.id));
