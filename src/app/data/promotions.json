@@ -585,5 +585,32 @@
                 6
             ]
         }
+    },
+    {
+        "id": "551125c6-3e90-4e12-8221-1366edb85613",
+        "title": "Acai con Modo Galicia",
+        "payment_methods": [
+            "Modo / Galicia / Crédito y Débito"
+        ],
+        "discount": 40,
+        "limit": {
+            "amount": 12000,
+            "times": "each",
+            "mode": "user",
+            "period": "month"
+        },
+        "validity": {
+            "from": "2025-05-01",
+            "to": "2025-11-30",
+            "days_of_week": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        }
     }
 ]
