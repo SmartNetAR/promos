@@ -412,10 +412,10 @@
         ],
         "discount": 30,
         "limit": {
-            "amount": 10000,
+            "amount": 7500,
             "times": "each",
             "mode": "user",
-            "period": "month"
+            "period": "week"
         },
         "validity": {
             "from": "2025-09-01",
